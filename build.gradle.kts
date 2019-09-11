@@ -13,7 +13,7 @@ plugins {
 }
 
 application {
-    mainClassName = "katsu.App"
+    mainClassName = "katsu.Katsu"
 }
 
 dependencies {

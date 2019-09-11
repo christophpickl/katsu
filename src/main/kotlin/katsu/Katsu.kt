@@ -1,6 +1,6 @@
 package katsu
 
-object App {
+object Katsu {
     @JvmStatic
     fun main(args: Array<String>) {
         println("Hello Katsu!")

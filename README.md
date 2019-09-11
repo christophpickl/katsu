@@ -4,6 +4,5 @@ shiatsu management desktop application
 # TODO
 
 * introduce tornadofx (+kodein)
+* introduce persistence layer
 * create mac app distribution
-* use resource filtering to inject version number
-* script to auto release (increment version number)
