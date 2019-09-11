@@ -19,6 +19,7 @@ application {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
+    implementation("no.tornado:tornadofx:1.7.19")
     // implementation("io.github.microutils:kotlin-logging:1.7.6")
     // implementation("ch.qos.logback:logback-classic:1.2.3")
 
