@@ -3,6 +3,7 @@ shiatsu management desktop application
 
 # TODO
 
+* enable log (in dev mode only console, otherwise to file) => programmatic log config (use kpot)
 * introduce persistence layer
 * create mac app distribution
 
