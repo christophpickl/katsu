@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 version = 1.0
@@ -10,6 +11,7 @@ repositories {
 plugins {
     kotlin("jvm") version "1.3.50"
     application
+    id("io.gitlab.arturbosch.detekt").version("1.0.1")
 }
 
 application {
@@ -42,5 +44,10 @@ tasks {
 
     withType<Test> {
         useTestNG()
+    }
+
+    withType<Detekt> {
+        config = files("src/main/build/detekt.yml")
+        source("src/main/kotlin", "src/test/kotlin")
     }
 }

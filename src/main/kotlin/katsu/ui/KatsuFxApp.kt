@@ -1,6 +1,11 @@
 package katsu.ui
 
-import tornadofx.*
+import tornadofx.App
+import tornadofx.View
+import tornadofx.action
+import tornadofx.button
+import tornadofx.label
+import tornadofx.vbox
 
 class KatsuFxApp : App(
     primaryView = MainView::class
