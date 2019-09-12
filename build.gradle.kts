@@ -12,6 +12,7 @@ repositories {
 plugins {
     kotlin("jvm") version "1.3.50"
     application
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.3.21"
     id("io.gitlab.arturbosch.detekt").version("1.0.1")
 }
 
@@ -27,6 +28,11 @@ dependencies {
     // implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.kodein.di:kodein-di-generic-jvm:6.3.3")
     implementation("org.kodein.di:kodein-di-framework-tornadofx-jvm:6.3.3")
+
+    // PERSISTENCE
+    implementation("com.h2database:h2:1.4.199")
+    implementation("org.hibernate:hibernate-core:5.4.4.Final")
+    implementation("org.hibernate:hibernate-hikaricp:5.4.4.Final")
 
     // TEST
     testImplementation("org.testng:testng:7.0.0")
