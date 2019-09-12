@@ -6,6 +6,7 @@ version = 1.0
 repositories {
     jcenter()
     mavenCentral()
+    maven { setUrl("https://dl.bintray.com/kodein-framework/Kodein-DI") }
 }
 
 plugins {
@@ -24,6 +25,8 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.19")
     // implementation("io.github.microutils:kotlin-logging:1.7.6")
     // implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.kodein.di:kodein-di-generic-jvm:6.3.3")
+    implementation("org.kodein.di:kodein-di-framework-tornadofx-jvm:6.3.3")
 
     // TEST
     testImplementation("org.testng:testng:7.0.0")
@@ -32,6 +35,10 @@ dependencies {
     //testImplementation("com.github.tomakehurst:wiremock:2.24.1") {
     //    exclude(group = "junit", module = "junit")
     //}
+
+    // https://github.com/Kodein-Framework/Kodein-DI/blob/master/framework/tornadofx/kodein-di-framework-tornadofx-jvm/src/test/kotln/org/kodein/di/tornadofx/testapp.kt
+//    testImplementation("org.testfx:testfx-core:4.0.4-alpha")
+//    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 }
 
 tasks {

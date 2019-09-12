@@ -3,8 +3,6 @@ shiatsu management desktop application
 
 # TODO
 
-* travis
-* introduce kodein
 * introduce persistence layer
 * create mac app distribution
 
