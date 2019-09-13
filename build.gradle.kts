@@ -50,9 +50,6 @@ dependencies {
     testImplementation("org.testng:testng:7.0.0")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.19")
     testImplementation("io.mockk:mockk:1.9.3")
-    //testImplementation("com.github.tomakehurst:wiremock:2.24.1") {
-    //    exclude(group = "junit", module = "junit")
-    //}
 }
 
 tasks {
@@ -70,7 +67,13 @@ tasks {
     withType<Detekt> {
         config = files("src/main/build/detekt.yml")
         source("src/main/kotlin", "src/test/kotlin")
+        reports {
+            html.enabled = false
+            xml.enabled = false
+            txt.enabled = false
+        }
     }
+
     named<DependencyUpdatesTask>("dependencyUpdates") {
         val rejectPatterns = listOf("alpha", "Alpha2", "beta", "eap").map { qualifier ->
             Regex("(?i).*[.-]$qualifier[.\\d-]*")
