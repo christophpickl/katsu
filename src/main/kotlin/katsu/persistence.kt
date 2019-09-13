@@ -15,7 +15,6 @@ import javax.persistence.spi.PersistenceUnitInfo
 import javax.persistence.spi.PersistenceUnitTransactionType
 import javax.sql.DataSource
 
-
 @Entity
 @Table
 data class Foo(
