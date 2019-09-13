@@ -6,7 +6,6 @@ import tornadofx.launch
 import java.io.File
 
 object Katsu {
-
     object Configuration {
         object Directories {
             val applicationHome = File(

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./gradlew test check
+./gradlew test check checkTodo

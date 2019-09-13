@@ -1,3 +1,4 @@
+import com.autoscout24.gradle.TodoPluginExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -11,15 +12,21 @@ repositories {
     maven { setUrl("https://dl.bintray.com/christophpickl/cpickl") }
 }
 
+buildscript {
+    dependencies {
+        classpath("com.autoscout24.gradle:gradle-todo-plugin:1.0")
+        classpath("commons-io:commons-io:2.6") // needed by todoPlugin as of missing org/apache/commons/io/FilenameUtils
+    }
+}
+
 plugins {
     kotlin("jvm") version "1.3.50"
     application
     id("org.jetbrains.kotlin.plugin.jpa") version "1.3.50"
-
-    // QUALITY
     id("io.gitlab.arturbosch.detekt").version("1.0.1")
     id("com.github.ben-manes.versions") version "0.25.0"
 }
+apply(plugin = "com.autoscout24.gradle.todo")
 
 application {
     mainClassName = "katsu.Katsu"
@@ -46,10 +53,6 @@ dependencies {
     //testImplementation("com.github.tomakehurst:wiremock:2.24.1") {
     //    exclude(group = "junit", module = "junit")
     //}
-
-    // https://github.com/Kodein-Framework/Kodein-DI/blob/master/framework/tornadofx/kodein-di-framework-tornadofx-jvm/src/test/kotln/org/kodein/di/tornadofx/testapp.kt
-//    testImplementation("org.testfx:testfx-core:4.0.4-alpha")
-//    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 }
 
 tasks {
@@ -86,4 +89,11 @@ tasks {
         outputDir = "build/reports"
         reportfileName = "dependencyUpdates"
     }
+}
+
+configure<TodoPluginExtension> {
+    todoPattern = "//[\\t\\s]*(TODO|FIXME) (.*)"
+    failIfFound = true
+    sourceFolder = "src" // to pick up main and test
+    fileExtensions = listOf("kt")
 }
