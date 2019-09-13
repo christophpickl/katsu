@@ -22,6 +22,7 @@ buildscript {
 plugins {
     kotlin("jvm") version "1.3.50"
     application
+    jacoco
     id("org.jetbrains.kotlin.plugin.jpa") version "1.3.50"
     id("io.gitlab.arturbosch.detekt").version("1.0.1")
     id("com.github.ben-manes.versions") version "0.25.0"
@@ -91,6 +92,26 @@ tasks {
         outputFormatter = "json"
         outputDir = "build/reports"
         reportfileName = "dependencyUpdates"
+    }
+
+    withType<JacocoReport> {
+        reports {
+            html.isEnabled = false
+            xml.isEnabled = false
+            // executionData(withType<Test>())
+        }
+    }
+
+    withType<JacocoCoverageVerification> {
+        violationRules {
+            rule {
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = BigDecimal(0.50)
+                }
+            }
+        }
     }
 }
 
