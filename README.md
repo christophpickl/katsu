@@ -3,7 +3,9 @@ shiatsu management desktop application
 
 # TODO
 
-* enable log (in dev mode only console, otherwise to file) => programmatic log config (use kpot; clean it up/upgrade)
+* enforce jacoco min coverage
+* dependency version gradle plugin
+* todo gradle plugin (fail if there is a single for RELEASE)
 * DB migration
 * create mac app distribution
 * release: create GIT tag, backup old DB prod-data, and automatically replace *.app file

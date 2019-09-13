@@ -56,6 +56,7 @@ fun main() {
     em.close()
 }
 
+@Suppress("TooManyFunctions", "EmptyFunctionBlock")
 class PersistenceUnitInfoImpl(
     private val properties: Properties,
     private val managedClasses: List<String>,

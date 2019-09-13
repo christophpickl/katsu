@@ -1,3 +1,4 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -7,13 +8,17 @@ repositories {
     jcenter()
     mavenCentral()
     maven { setUrl("https://dl.bintray.com/kodein-framework/Kodein-DI") }
+    maven { setUrl("https://dl.bintray.com/christophpickl/cpickl") }
 }
 
 plugins {
     kotlin("jvm") version "1.3.50"
     application
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.3.21"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.3.50"
+
+    // QUALITY
     id("io.gitlab.arturbosch.detekt").version("1.0.1")
+    id("com.github.ben-manes.versions") version "0.25.0"
 }
 
 application {
@@ -24,8 +29,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     implementation("no.tornado:tornadofx:1.7.19")
-    // implementation("io.github.microutils:kotlin-logging:1.7.6")
-    // implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("com.github.christophpickl.kpotpourri:logback4k:2.4")
+    implementation("io.github.microutils:kotlin-logging:1.7.6")
     implementation("org.kodein.di:kodein-di-generic-jvm:6.3.3")
     implementation("org.kodein.di:kodein-di-framework-tornadofx-jvm:6.3.3")
 
@@ -62,5 +67,23 @@ tasks {
     withType<Detekt> {
         config = files("src/main/build/detekt.yml")
         source("src/main/kotlin", "src/test/kotlin")
+    }
+    named<DependencyUpdatesTask>("dependencyUpdates") {
+        val rejectPatterns = listOf("alpha", "Alpha2", "beta", "eap").map { qualifier ->
+            Regex("(?i).*[.-]$qualifier[.\\d-]*")
+        }
+        resolutionStrategy {
+            componentSelection {
+                all {
+                    if (rejectPatterns.any { it.matches(candidate.version) }) {
+                        reject("Release candidate")
+                    }
+                }
+            }
+        }
+        checkForGradleUpdate = true
+        outputFormatter = "json"
+        outputDir = "build/reports"
+        reportfileName = "dependencyUpdates"
     }
 }

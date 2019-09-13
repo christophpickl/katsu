@@ -1,5 +1,6 @@
 package katsu.ui
 
+import mu.KotlinLogging
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
@@ -51,10 +52,12 @@ class MainView : View() {
         title = "Katsu"
     }
 
+    private val logg = KotlinLogging.logger {}
     private val controller: MainController by appKodein.instance()
     override val root = vbox {
         label("katsu here :)")
         button("click me").action {
+            logg.debug { "button clicked" }
             println(controller.greet("katsu"))
         }
     }
