@@ -1,4 +1,4 @@
-package katsu
+package katsu.persistence
 
 import org.h2.Driver
 import org.h2.jdbcx.JdbcDataSource
@@ -16,7 +16,7 @@ import javax.sql.DataSource
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
-object HibernateManager {
+object HibernateOpener {
     fun open(config: HibernateConfig): EntityManager {
         val persistenceUnitInfo = createPersistenceUnitInfo(config)
         val emf = HibernatePersistenceProvider().createContainerEntityManagerFactory(persistenceUnitInfo, Properties())
@@ -44,11 +44,11 @@ class HibernateConfig(
 sealed class HibernateConnection {
     abstract val dataSourceUrl: String
 
-    class InMemoryConnection(val name: String) : HibernateConnection() {
+    class InMemoryConnection(name: String) : HibernateConnection() {
         override val dataSourceUrl = "jdbc:h2:mem:$name;DB_CLOSE_DELAY=-1"
     }
 
-    class FileConnection(val db: File) : HibernateConnection() {
+    class FileConnection(db: File) : HibernateConnection() {
         override val dataSourceUrl = "jdbc:h2:${db.canonicalPath}"
     }
 }

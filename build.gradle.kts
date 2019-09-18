@@ -21,7 +21,7 @@ buildscript {
     dependencies {
         classpath("com.autoscout24.gradle:gradle-todo-plugin:1.0")
         classpath("commons-io:commons-io:2.6") // needed by todoPlugin as of missing org/apache/commons/io/FilenameUtils
-        classpath("gradle.plugin.edu.sc.seis:macAppBundle:2.2.1")
+        classpath("gradle.plugin.edu.sc.seis:macAppBundle:2.2.3")
     }
 }
 
@@ -53,8 +53,9 @@ dependencies {
 
     // PERSISTENCE
     compile("com.h2database:h2:1.4.199")
-    compile("org.hibernate:hibernate-core:5.4.4.Final")
-    compile("org.hibernate:hibernate-hikaricp:5.4.4.Final")
+    compile("org.hibernate:hibernate-core:5.4.5.Final")
+    compile("org.hibernate:hibernate-hikaricp:5.4.5.Final")
+    compile("org.flywaydb:flyway-core:6.0.3")
 
     // TEST
     testImplementation("org.testng:testng:7.0.0")
