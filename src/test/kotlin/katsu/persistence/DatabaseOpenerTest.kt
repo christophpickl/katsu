@@ -9,11 +9,12 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Test
-class HibernateOpenerTest {
+class DatabaseOpenerTest {
     fun `When connect and persist and fetch Then return that entity`() {
-        val em = HibernateOpener.open(HibernateConfig(
+        val em = DatabaseOpener.open(HibernateConfig(
             connection = HibernateConnection.InMemoryConnection("testDb"),
-            managedClasses = listOf(TestEntity::class)
+            managedClasses = listOf(TestEntity::class),
+            ddlMode = HibernateDdlMode.UPDATE
         ))
         em.transaction.begin()
         em.persist(TestEntity("testName"))

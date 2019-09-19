@@ -1,6 +1,6 @@
-
-CREATE TABLE client (
-  id VARCHAR(36) NOT NULL PRIMARY KEY,
-  firstName VARCHAR(128) NOT NULL,
-  note VARCHAR(1024) NOT NULL
+CREATE TABLE client
+(
+    id        IDENTITY     NOT NULL PRIMARY KEY,
+    firstName VARCHAR(128) NOT NULL,
+    note      TEXT         NOT NULL
 );

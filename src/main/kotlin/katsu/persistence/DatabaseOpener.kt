@@ -16,7 +16,12 @@ import javax.sql.DataSource
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
-object HibernateOpener {
+enum class HibernateDdlMode(val propertyValue: String) {
+    NONE("none"),
+    UPDATE("update")
+}
+
+object DatabaseOpener {
     fun open(config: HibernateConfig): EntityManager {
         val persistenceUnitInfo = createPersistenceUnitInfo(config)
         val emf = HibernatePersistenceProvider().createContainerEntityManagerFactory(persistenceUnitInfo, Properties())
@@ -27,7 +32,7 @@ object HibernateOpener {
         val properties = Properties().apply {
             put("driver", Driver::class.java.name)
             put("hibernate.dialect", "org.hibernate.dialect.H2Dialect")
-            put("hibernate.hbm2ddl.auto", "update")
+            put("hibernate.hbm2ddl.auto", config.ddlMode.propertyValue)
         }
         val dataSource = JdbcDataSource()
         dataSource.setURL(config.connection.dataSourceUrl)
@@ -38,7 +43,8 @@ object HibernateOpener {
 
 class HibernateConfig(
     val connection: HibernateConnection,
-    val managedClasses: List<KClass<*>>
+    val managedClasses: List<KClass<*>>,
+    val ddlMode: HibernateDdlMode = HibernateDdlMode.NONE
 )
 
 sealed class HibernateConnection {
@@ -47,7 +53,6 @@ sealed class HibernateConnection {
     class InMemoryConnection(name: String) : HibernateConnection() {
         override val dataSourceUrl = "jdbc:h2:mem:$name;DB_CLOSE_DELAY=-1"
     }
-
     class FileConnection(db: File) : HibernateConnection() {
         override val dataSourceUrl = "jdbc:h2:${db.canonicalPath}"
     }

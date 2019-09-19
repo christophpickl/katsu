@@ -1,7 +1,7 @@
 package katsu
 
 import katsu.ui.KatsuFxApp
-import mu.KotlinLogging
+import mu.KotlinLogging.logger
 import tornadofx.launch
 import java.io.File
 
@@ -18,9 +18,12 @@ object Katsu {
     @JvmStatic
     fun main(args: Array<String>) {
         Logging.configure(Environment.current)
-        val log = KotlinLogging.logger {}
+
+        val log = logger {}
         log.info { "Starting up application..." }
         launch<KatsuFxApp>(args)
         log.info { "Main thread dying." }
     }
 }
+
+object KoinModules // register modules via extension properties

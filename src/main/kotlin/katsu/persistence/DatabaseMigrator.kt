@@ -10,7 +10,7 @@ import org.flywaydb.core.internal.info.MigrationInfoImpl
 import javax.persistence.EntityManager
 import javax.sql.DataSource
 
-class FlywayMigrator(
+class DatabaseMigrator(
     private val em: EntityManager
 ) {
     private val log = logger {}

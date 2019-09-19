@@ -6,17 +6,16 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 
 # TODO
 
-* configure travis (test, check, verify, validate)
-* release: create GIT tag, backup old DB prod-data, and automatically replace *.app file
 * tornadofx testing:
     * see: https://github.com/Kodein-Framework/Kodein-DI/blob/master/framework/tornadofx/kodein-di-framework-tornadofx-jvm/src/test/kotln/org/kodein/di/tornadofx/testapp.kt
-    * use: testImplementation("org.testfx:testfx-core:4.0.4-alpha")
-    * use: testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    * use: testImplementation("org.testfx:testfx-core:4.0.16-alpha")
+    * use ??? testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 * !!! MVP:
     * links liste mit namen (only)
     * ein einziges grosses textfeld mit notiz (plus namensfeld)
     * danach: rechts liste mit behandlungen (nur 4 entries zeigen)
     * ... wo drunter noch ein einziges grosses textfeld angezeigt wird (selber screen!)
+* release: create GIT tag, backup old DB prod-data, and automatically replace *.app file
 
 # Roadmap
 
@@ -44,6 +43,8 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 
 * introduce `buildSrc` gradle folder
 * ? `Thread.setDefaultUncaughtExceptionHandler`?
+* use more plugins? (kodein, javafx)
+    * https://github.com/Kodein-Framework/Kodein-DI/blob/master/framework/tornadofx/kodein-di-framework-tornadofx-jvm/build.gradle.kts)
 
 # Tech Notes
 

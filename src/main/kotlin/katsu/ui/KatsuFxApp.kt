@@ -1,64 +1,48 @@
 package katsu.ui
 
-import mu.KotlinLogging
+import javafx.stage.Stage
+import katsu.KoinModules
+import katsu.persistence.DatabaseMigrator
+import katsu.persistence.persistenceModule
+import katsu.ui.controller.MainController
+import katsu.ui.view.MainView
+import mu.KotlinLogging.logger
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
-import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
 import org.kodein.di.tornadofx.installTornadoSource
 import tornadofx.App
-import tornadofx.Controller
-import tornadofx.View
-import tornadofx.action
-import tornadofx.button
-import tornadofx.label
-import tornadofx.vbox
-
-val uiModule = Kodein.Module("UI Module") {
-    bind<DemoRepository>() with singleton { DemoRepositoryImpl() }
-    bind() from singleton { MainController(instance()) }
-}
+import tornadofx.find
+import javax.persistence.EntityManager
 
 val appKodein = Kodein {
-    import(uiModule)
+    import(KoinModules.uiModule)
+    import(KoinModules.persistenceModule)
     installTornadoSource()
 }
 
 class KatsuFxApp : App(
     primaryView = MainView::class
 ), KodeinAware {
-    // https://kodein.org/Kodein-DI/?6.3/tornadofx
-    override val kodein = appKodein
-}
 
-interface DemoRepository {
-    fun greeting(): String
-}
-
-class DemoRepositoryImpl : DemoRepository {
-    override fun greeting(): String {
-        return "hello"
-    }
-}
-
-class MainController(private val repository: DemoRepository) : Controller() {
-    //private val repository: DemoRepository by kodein().instance()
-    fun greet(name: String) = "${repository.greeting()} $name!"
-}
-
-class MainView : View() {
     init {
-        title = "Katsu"
+        // eager load controller to make event subscription work
+        find(MainController::class)
     }
 
-    private val logg = KotlinLogging.logger {}
-    private val controller: MainController by appKodein.instance()
-    override val root = vbox {
-        label("katsu here :)")
-        button("click me").action {
-            logg.debug { "button clicked" }
-            println(controller.greet("katsu"))
-        }
+    private val log = logger {}
+
+    override val kodein = appKodein
+    private val em by kodein.instance<EntityManager>()
+
+    override fun start(stage: Stage) {
+        super.start(stage)
+        DatabaseMigrator(em).migrate()
+    }
+
+    override fun stop() {
+        log.debug { "Stop invoked, closing DB." }
+        em.close()
+        super.stop()
     }
 }
