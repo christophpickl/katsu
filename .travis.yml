@@ -9,7 +9,7 @@ before_install:
   - "chmod +x gradlew"
 
 script:
-  - "./gradlew test check"
+  - "./bin/check.sh"
 
 notifications:
   email:

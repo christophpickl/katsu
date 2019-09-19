@@ -1,5 +1,8 @@
-# katsu
-shiatsu management desktop application
+# Katsu
+
+A shiatsu management desktop application, using Kotlin and TornadoFX (Kotlin-ish JavaFX).
+
+It's a complete rewrite and slimmed version of the old [Gadsu](https://github.com/christophpickl/gadsu).
 
 # TODO
 
@@ -15,7 +18,29 @@ shiatsu management desktop application
     * danach: rechts liste mit behandlungen (nur 4 entries zeigen)
     * ... wo drunter noch ein einziges grosses textfeld angezeigt wird (selber screen!)
 
-## Phase 2
+# Roadmap
+
+# Phase 0
+* UI tests
+* auto release
+* autosave (on client change, on exit)
+// prefs hardcoded in kotlin
+
+# Phase 1
+* treatment list (single textfield, date)
+* client picture: jpg+png, auto resize, auto crop
+* rich text textfields
+* moooar fields (client ABC type, donation type, birthday, names, gender, text sections) 
+* client treatment cooldown, treatment counter indicator
+
+# Phase 2
+* treatment goal indicator
+* mail integration (templates; rich format html? own freeshiatsu address?) 
+* calendar integration
+* doodle integration
+* manage invitations (store mail + mail type), manage response
+
+## IT Driven
 
 * introduce `buildSrc` gradle folder
 * ? `Thread.setDefaultUncaughtExceptionHandler`?
