@@ -5,19 +5,13 @@ sudo: false # route the build to the container-based infrastructure for a faster
 jdk:
   - oraclejdk8
 
-services:
-  - xvfb
-
 before_install:
-  - sudo apt update
-  - sudo apt install openjfx
   - chmod +x gradlew
-  - export DISPLAY=:99.0
 
 install: true
 
 script:
-  - ./bin/check.sh
+  - ./gradlew test check checkTodo jacocoTestCoverageVerification
 
 notifications:
   email:
