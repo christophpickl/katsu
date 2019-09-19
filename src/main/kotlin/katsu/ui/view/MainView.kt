@@ -19,9 +19,12 @@ class MainView : View() {
     private val controller: MainController by appKodein.instance()
     override val root = vbox {
         label("katsu here :)")
-        button("click me").action {
-            logg.debug { "button clicked" }
-            println("Count clients: ${controller.fetchAllClients().size}")
+        button("click me").apply {
+            id = "btnClickMe"
+            action {
+                logg.debug { "button clicked" }
+                println("Count clients: ${controller.fetchAllClients().size}")
+            }
         }
     }
 }
