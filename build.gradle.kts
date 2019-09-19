@@ -9,6 +9,7 @@ version = 1.0
 
 val myMainClassName = "katsu.Katsu"
 val myAppName = "Katsu"
+val minimumLineCoverage = 0.5
 
 repositories {
     jcenter()
@@ -61,6 +62,7 @@ dependencies {
     testImplementation("org.testng:testng:7.0.0")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.19")
     testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("org.testfx:testfx-core:4.0.16-alpha")
 }
 
 tasks {
@@ -72,7 +74,11 @@ tasks {
     }
 
     withType<Test> {
-        useTestNG()
+        useTestNG {
+            if (System.getProperty("katsu.uiTest") == null) {
+                excludeGroups = setOf("uiTest")
+            }
+        }
     }
 
     withType<Detekt> {
@@ -118,7 +124,7 @@ tasks {
                 limit {
                     counter = "LINE"
                     value = "COVEREDRATIO"
-                    minimum = BigDecimal(0.50)
+                    minimum = BigDecimal(minimumLineCoverage)
                 }
             }
         }

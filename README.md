@@ -6,10 +6,6 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 
 # TODO
 
-* tornadofx testing:
-    * see: https://github.com/Kodein-Framework/Kodein-DI/blob/master/framework/tornadofx/kodein-di-framework-tornadofx-jvm/src/test/kotln/org/kodein/di/tornadofx/testapp.kt
-    * use: testImplementation("org.testfx:testfx-core:4.0.16-alpha")
-    * use ??? testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 * !!! MVP:
     * links liste mit namen (only)
     * ein einziges grosses textfeld mit notiz (plus namensfeld)
