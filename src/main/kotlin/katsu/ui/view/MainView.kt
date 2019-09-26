@@ -6,6 +6,7 @@ import javafx.beans.value.ObservableValue
 import javafx.geometry.Orientation
 import javafx.scene.control.TextField
 import katsu.model.Client
+import katsu.persistence.NO_ID
 import katsu.ui.ClientData
 import katsu.ui.appKodein
 import katsu.ui.controller.MainController
@@ -56,7 +57,7 @@ class MainView : View() {
                 id = "btnClickMe"
                 action {
                     logg.debug { "button clicked" }
-                    val client = Client(0, "dummy", "some note")
+                    val client = Client(NO_ID, "dummy", "some note")
                     controller.insertOrUpdateClient(client)
                     clients += client.toClientData()
                 }

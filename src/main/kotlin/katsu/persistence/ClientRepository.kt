@@ -13,9 +13,8 @@ class ClientRepositoryImpl(
     private val em: EntityManager
 ) : ClientRepository {
 
-    // TODO test me
     override fun fetch(id: Long): ClientDbo =
-        em.find(ClientDbo::class.java, id) ?: throw Exception("Client not found by ID: $id")
+        em.find(ClientDbo::class.java, id) ?: throw ClientNotFoundException(id)
 
     override fun fetchAll(): List<ClientDbo> =
         em.createQuery("from ${ClientDbo.ENTITY_NAME}", ClientDbo::class.java).resultList
@@ -26,3 +25,5 @@ class ClientRepositoryImpl(
         }
     }
 }
+
+class ClientNotFoundException(id: Long) : RuntimeException("Client not found by ID: $id")
