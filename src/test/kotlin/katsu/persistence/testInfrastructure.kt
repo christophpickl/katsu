@@ -19,9 +19,13 @@ fun EntityManager.use(action: (EntityManager) -> Unit) {
     }
 }
 
-fun withTestDb(managedClasses: List<KClass<*>> = katsuManagedClasses, action: TestDbContext.() -> Unit) {
+fun withTestDb(migration: Boolean = true, managedClasses: List<KClass<*>> = katsuManagedClasses, action: TestDbContext.() -> Unit) {
     DatabaseOpener.openTestDb(managedClasses).use { em ->
-        TestDbContext(em).action()
+        val testDbContext = TestDbContext(em)
+        if (migration) {
+            testDbContext.migrate()
+        }
+        testDbContext.action()
     }
 }
 

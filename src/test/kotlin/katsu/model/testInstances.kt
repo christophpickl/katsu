@@ -2,8 +2,10 @@
 
 package katsu.model
 
-fun Client.Companion.testInstance() = Client(
-    id = 0L,
+import katsu.persistence.NO_ID
+
+fun ClientDbo.Companion.testInstance() = ClientDbo(
+    id = NO_ID,
     firstName = "testFirstName",
     note = "some test note"
 )
