@@ -121,11 +121,13 @@ tasks {
     withType<JacocoCoverageVerification> {
         violationRules {
             rule {
+                element = "PACKAGE"
                 limit {
                     counter = "LINE"
                     value = "COVEREDRATIO"
                     minimum = BigDecimal(minimumLineCoverage)
                 }
+                excludes = listOf("katsu.ui.*", "katsu.ui")
             }
         }
     }
