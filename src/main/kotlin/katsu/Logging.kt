@@ -18,7 +18,7 @@ object Logging {
                         pattern = "%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-28thread] %logger{60} - %msg%n"
                     }
                 }
-                Environment.DEV -> {
+                Environment.DEV, Environment.UI_TEST -> {
                     addConsoleAppender {
                         pattern = "%d{HH:mm:ss.SSS} [%-5level] [%-28thread] %logger{60} - %msg%n"
                     }

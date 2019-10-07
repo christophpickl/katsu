@@ -8,34 +8,46 @@ import katsu.ui.AddNewClientEvent
 import katsu.ui.ClientAdded
 import katsu.ui.ClientDeleted
 import katsu.ui.ClientUpdated
+import katsu.ui.ClientsReloaded
 import katsu.ui.DeleteClient
 import katsu.ui.UpdateClient
-import mu.KotlinLogging
+import mu.KotlinLogging.logger
 import org.kodein.di.generic.instance
 import org.kodein.di.tornadofx.kodein
 import tornadofx.Controller
+import tornadofx.FXEventRegistration
 
 class MainController : Controller() {
 
+    private val registrations = mutableListOf<FXEventRegistration>()
+
+    private val logg = logger {}
+    private val repository: ClientRepository by kodein().instance()
+
     init {
-        subscribe<AddNewClientEvent> {
+        registrations += subscribe<AddNewClientEvent> {
             insertNewClient()
         }
-        subscribe<UpdateClient> {
+        registrations += subscribe<UpdateClient> {
             updateExistingClient(it.client)
         }
-        subscribe<DeleteClient> {
+        registrations += subscribe<DeleteClient> {
             deleteClient(it.clientId)
         }
+
     }
 
-    private val logg = KotlinLogging.logger {}
-    private val repository: ClientRepository by kodein().instance()
+    fun initView() {
+        fire(ClientsReloaded(fetchAllClients()))
+    }
 
     fun fetchAllClients() = repository.fetchAll().map { it.toClient() }
 
-    fun fetch(id: Long): Client =
-        repository.fetch(id).toClient()
+    fun fetch(id: Long): Client = repository.fetch(id).toClient()
+
+    fun unsubscribeAll() {
+        registrations.forEach { it.unsubscribe() }
+    }
 
     private fun insertNewClient() {
         val client = Client(NO_ID, "dummy", "some note")

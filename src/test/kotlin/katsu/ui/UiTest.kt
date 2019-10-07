@@ -1,65 +1,41 @@
 package katsu.ui
 
-import javafx.scene.Node
-import javafx.scene.Scene
+import assertk.assertThat
+import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
+import javafx.scene.control.ListView
 import javafx.scene.input.MouseButton
-import javafx.scene.layout.VBox
 import katsu.ui.view.ViewIds
-import org.testfx.api.FxAssert
 import org.testfx.api.FxRobot
-import org.testfx.api.FxToolkit
-import org.testfx.matcher.control.LabeledMatchers
 import org.testfx.robot.Motion
 import org.testng.annotations.Test
-import tornadofx.action
-import tornadofx.add
-import tornadofx.button
-import tornadofx.label
-import java.util.function.Predicate
 
 // https://github.com/TestFX/TestFX
 // https://github.com/edvin/tornadofx/tree/master/src/test/kotlin/tornadofx/tests
 @Test(groups = ["uiTest"])
 class UiTest {
-    fun `just a sample`() {
-        val stage = FxToolkit.registerPrimaryStage()
 
-        val root = FooPane()
-        FxToolkit.setupFixture {
-            stage.scene = Scene(root)
-            stage.show()
-        }
+    fun `When add client Then client list size increased`() = withKatsuFx {
+        val list = findClientList()
+        assertThat(list.items).isEmpty()
 
-        FxAssert.verifyThat(root.label1, LabeledMatchers.hasText("hello"))
-        val robot = FxRobot()
-        robot.clickOn(Predicate<Node> { it.id == "foo" }, Motion.DIRECT, MouseButton.PRIMARY)
-        try {
-            FxAssert.verifyThat(root.label1, LabeledMatchers.hasText("griassi"))
-        } catch (e: AssertionError) {
-            robot.saveScreenshot(stage)
-            throw e
-        }
+        addClient()
+
+        assertThat(list.items).hasSize(1)
     }
 
-    fun `Start app and click button`() {
-        FxToolkit.registerPrimaryStage()
-        FxToolkit.setupApplication(KatsuFxApp::class.java)
-        val robot = FxRobot()
-        robot.clickOn(Predicate<Node> { it.id == ViewIds.BUTTON_ADD_CLIENT }, Motion.DIRECT, MouseButton.PRIMARY)
-    }
-}
+    fun `When add client Then client list size increased2`() = withKatsuFx {
+        val list = findClientList()
+        assertThat(list.items).isEmpty()
 
-class FooPane : VBox() {
-    val label1 = label(text = "hello")
-    init {
-        add(label1)
-        add(label(text = "katsu"))
-        add(button(text = "click me").apply {
-            id = "foo"
-            action {
-                label1.text = "griassi"
-                println("click me clicked")
-            }
-        })
+        addClient()
+
+        assertThat(list.items).hasSize(1)
+    }
+
+    private fun FxRobot.findClientList() = lookup(byId(ViewIds.LIST_CLIENTS)).query<ListView<*>>()
+
+    private fun FxRobot.addClient() {
+        clickOn(byId(ViewIds.BUTTON_ADD_CLIENT), Motion.DIRECT, MouseButton.PRIMARY)
     }
 }

@@ -11,3 +11,5 @@ class ClientUpdated(val client: Client) : FXEvent()
 
 class DeleteClient(val clientId: Long) : FXEvent()
 class ClientDeleted(val clientId: Long) : FXEvent()
+
+class ClientsReloaded(val clients: List<Client>) : FXEvent()

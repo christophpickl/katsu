@@ -13,6 +13,7 @@ interface ClientRepository {
 class ClientRepositoryImpl(
     private val em: EntityManager
 ) : ClientRepository {
+
     override fun fetch(id: Long): ClientDbo =
         em.find(ClientDbo::class.java, id) ?: throw ClientNotFoundException(id)
 

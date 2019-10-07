@@ -4,6 +4,7 @@ import javafx.stage.Stage
 import katsu.KoinModules
 import katsu.persistence.DatabaseMigrator
 import katsu.persistence.persistenceModule
+import katsu.ui.controller.MainController
 import katsu.ui.view.MainView
 import mu.KotlinLogging.logger
 import org.kodein.di.Kodein
@@ -13,7 +14,7 @@ import org.kodein.di.tornadofx.installTornadoSource
 import tornadofx.App
 import javax.persistence.EntityManager
 
-val appKodein = Kodein {
+fun appKodein() = Kodein {
     import(KoinModules.uiModule)
     import(KoinModules.persistenceModule)
     installTornadoSource()
@@ -25,17 +26,24 @@ class KatsuFxApp : App(
 
     private val log = logger {}
 
-    override val kodein = appKodein
-    private val em by kodein.instance<EntityManager>()
+    override var kodein = appKodein()
 
     override fun start(stage: Stage) {
-        super.start(stage)
+        val em by kodein.instance<EntityManager>()
         DatabaseMigrator(em).migrate()
+        super.start(stage)
+        val controller by kodein.instance<MainController>()
+        controller.initView()
     }
 
     override fun stop() {
         log.debug { "Stop invoked, closing DB." }
+        val em by kodein.instance<EntityManager>()
         em.close()
+        val controller by kodein.instance<MainController>()
+        controller.unsubscribeAll()
+        val view by kodein.instance<MainView>()
+        view.unsubscribeAll()
         super.stop()
     }
 }
