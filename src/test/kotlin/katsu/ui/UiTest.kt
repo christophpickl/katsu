@@ -4,6 +4,7 @@ import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.VBox
+import katsu.ui.view.ViewIds
 import org.testfx.api.FxAssert
 import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
@@ -44,7 +45,7 @@ class UiTest {
         FxToolkit.registerPrimaryStage()
         FxToolkit.setupApplication(KatsuFxApp::class.java)
         val robot = FxRobot()
-        robot.clickOn(Predicate<Node> { it.id == "btnClickMe" }, Motion.DIRECT, MouseButton.PRIMARY)
+        robot.clickOn(Predicate<Node> { it.id == ViewIds.BUTTON_ADD_CLIENT }, Motion.DIRECT, MouseButton.PRIMARY)
     }
 }
 

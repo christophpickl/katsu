@@ -13,6 +13,8 @@ class ClientData(client: Client) {
     var firstName by property<String>(client.firstName)
     fun firstNameProperty() = getProperty(ClientData::firstName)
 
+    fun toClient() = Client(id = id, firstName = firstName, note = "")
+
     override fun toString() = "ClientData[id=$id, firstName=$firstName]"
 }
 

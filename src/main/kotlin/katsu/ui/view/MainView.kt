@@ -6,8 +6,13 @@ import javafx.beans.value.ObservableValue
 import javafx.geometry.Orientation
 import javafx.scene.control.TextField
 import katsu.model.Client
-import katsu.persistence.NO_ID
+import katsu.ui.AddNewClientEvent
+import katsu.ui.ClientAdded
 import katsu.ui.ClientData
+import katsu.ui.ClientDeleted
+import katsu.ui.ClientUpdated
+import katsu.ui.DeleteClient
+import katsu.ui.UpdateClient
 import katsu.ui.appKodein
 import katsu.ui.controller.MainController
 import katsu.ui.toClientData
@@ -26,10 +31,6 @@ import tornadofx.singleAssign
 import tornadofx.textfield
 import tornadofx.vbox
 
-//class ClientModel(client: ClientData?  = null) : ItemViewModel<ClientData>(client) {
-//    val firstName = bind(ClientData::firstNameProperty)
-//}
-
 class MainView : View() {
 
     private val logg = logger {}
@@ -38,6 +39,23 @@ class MainView : View() {
     private val clients = ObservableListWrapper(controller.fetchAllClients().map { it.toClientData() }.toMutableList())
     private val selectedClient = SimpleObjectProperty<ClientData>()
     private var firstNameField: TextField by singleAssign()
+
+    init {
+        title = "Katsu"
+        selectedClient.addListener { _: ObservableValue<out ClientData?>, _: ClientData?, newValue: ClientData? ->
+            firstNameField.text = newValue?.firstName ?: ""
+        }
+        subscribe<ClientAdded> { event ->
+            clients += event.client.toClientData()
+        }
+        subscribe<ClientUpdated> { event ->
+            val clientIndex = clients.indexOfFirst { it.id == event.client.id }
+            clients[clientIndex] = event.client.toClientData()
+        }
+        subscribe<ClientDeleted> { event ->
+            clients.removeIf { it.id == event.clientId }
+        }
+    }
 
     override val root = hbox {
         vbox {
@@ -50,34 +68,33 @@ class MainView : View() {
         }
         vbox {
             label("First Name")
-            firstNameField = textfield().apply {
-            }
+            firstNameField = textfield()
             separator(Orientation.HORIZONTAL)
-            button("add dummy").apply {
-                id = "btnClickMe"
+
+            button("Add new").apply {
+                id = ViewIds.BUTTON_ADD_CLIENT
                 action {
-                    logg.debug { "button clicked" }
-                    val client = Client(NO_ID, "dummy", "some note")
-                    controller.insertOrUpdateClient(client)
-                    clients += client.toClientData()
+                    logg.debug { "Add new client button clicked" }
+                    fire(AddNewClientEvent)
                 }
             }
             button("save").apply {
                 enableWhen { selectedClient.isNotNull }
                 action {
-                    val currentClient = selectedClient.get().toClient().copy(firstName = firstNameField.text)
-                    controller.insertOrUpdateClient(currentClient)
+                    val currentClient = selectedClient.get().toClient().updateByView()
+                    fire(UpdateClient(currentClient))
+                }
+            }
+            button("delete").apply {
+                enableWhen { selectedClient.isNotNull }
+                action {
+                    fire(DeleteClient(selectedClient.get().id))
                 }
             }
         }
     }
 
-    init {
-        title = "Katsu"
-        selectedClient.addListener { observable: ObservableValue<out ClientData?>, oldValue: ClientData?, newValue: ClientData? ->
-            firstNameField.text = newValue?.firstName ?: ""
-        }
-    }
+    private fun Client.updateByView() = copy(
+        firstName = firstNameField.text
+    )
 }
-
-fun ClientData.toClient() = Client(id = id, firstName = firstName, note = "")

@@ -4,15 +4,15 @@ import katsu.model.ClientDbo
 import javax.persistence.EntityManager
 
 interface ClientRepository {
+    fun fetch(id: Long): ClientDbo
     fun fetchAll(): List<ClientDbo>
     fun save(client: ClientDbo)
-    fun fetch(id: Long): ClientDbo
+    fun delete(id: Long)
 }
 
 class ClientRepositoryImpl(
     private val em: EntityManager
 ) : ClientRepository {
-
     override fun fetch(id: Long): ClientDbo =
         em.find(ClientDbo::class.java, id) ?: throw ClientNotFoundException(id)
 
@@ -22,6 +22,12 @@ class ClientRepositoryImpl(
     override fun save(client: ClientDbo) {
         em.transactional {
             persist(client)
+        }
+    }
+
+    override fun delete(id: Long) {
+        em.transactional {
+            remove(fetch(id))
         }
     }
 }

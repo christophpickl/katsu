@@ -3,6 +3,7 @@ package katsu.persistence
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isEqualToIgnoringGivenProperties
 import assertk.assertions.isFailure
@@ -57,6 +58,23 @@ class ClientRepositoryImplTest {
         assertThat(actualClients).hasSize(1)
         assertThat(actualClients[0]).isEqualToIgnoringGivenProperties(client, ClientDbo::id)
         assertThat(actualClients[0].id).isNotEqualTo(NO_ID)
+    }
+
+    fun `When delete non existing Then fail`() = withTestDb {
+        assertThat {
+            ClientRepositoryImpl(em).delete(nonExistingClientId)
+        }.isFailure().all {
+            isInstanceOf(ClientNotFoundException::class)
+            messageContains(nonExistingClientId.toString())
+        }
+    }
+
+    fun `Given client When delete that client Then no clients exist`() = withTestDb {
+        persist(client)
+
+        ClientRepositoryImpl(em).delete(client.id)
+
+        assertThat(em.createQuery("from ${ClientDbo.ENTITY_NAME}", ClientDbo::class.java).resultList).isEmpty()
     }
 }
 

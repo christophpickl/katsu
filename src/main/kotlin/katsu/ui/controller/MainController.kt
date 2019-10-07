@@ -4,12 +4,30 @@ import katsu.model.Client
 import katsu.model.ClientDbo
 import katsu.persistence.ClientRepository
 import katsu.persistence.NO_ID
+import katsu.ui.AddNewClientEvent
+import katsu.ui.ClientAdded
+import katsu.ui.ClientDeleted
+import katsu.ui.ClientUpdated
+import katsu.ui.DeleteClient
+import katsu.ui.UpdateClient
 import mu.KotlinLogging
 import org.kodein.di.generic.instance
 import org.kodein.di.tornadofx.kodein
 import tornadofx.Controller
 
 class MainController : Controller() {
+
+    init {
+        subscribe<AddNewClientEvent> {
+            insertNewClient()
+        }
+        subscribe<UpdateClient> {
+            updateExistingClient(it.client)
+        }
+        subscribe<DeleteClient> {
+            deleteClient(it.clientId)
+        }
+    }
 
     private val logg = KotlinLogging.logger {}
     private val repository: ClientRepository by kodein().instance()
@@ -19,7 +37,19 @@ class MainController : Controller() {
     fun fetch(id: Long): Client =
         repository.fetch(id).toClient()
 
-    fun insertOrUpdateClient(client: Client) {
+    private fun insertNewClient() {
+        val client = Client(NO_ID, "dummy", "some note")
+        insertOrUpdateClient(client)
+        fire(ClientAdded(client))
+    }
+
+    private fun updateExistingClient(client: Client) {
+        require(client.id != NO_ID) { "Not able to update a not yet persisted client!" }
+        insertOrUpdateClient(client)
+        fire(ClientUpdated(client))
+    }
+
+    private fun insertOrUpdateClient(client: Client) {
         logg.info { "insertOrUpdateClient(client=$client)" }
         if (client.id == NO_ID) {
             repository.save(client.toClientDbo())
@@ -28,6 +58,13 @@ class MainController : Controller() {
             dbClient.firstName = client.firstName
             repository.save(dbClient)
         }
+    }
+
+    private fun deleteClient(id: Long) {
+        logg.info { "deleteClient(id=$id)" }
+
+        repository.delete(id)
+        fire(ClientDeleted(id))
     }
 }
 
