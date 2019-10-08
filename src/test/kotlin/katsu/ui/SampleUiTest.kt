@@ -17,7 +17,7 @@ import tornadofx.button
 import tornadofx.label
 import java.util.function.Predicate
 
-@Test(groups = ["uiTest"])
+@Test(groups = ["ui"])
 @Ignore
 class SampleUiTest {
 

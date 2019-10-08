@@ -121,18 +121,10 @@ tasks {
         reports {
             html.isEnabled = false
             xml.isEnabled = false
-//             executionData(withType<Test>())
         }
-//        executionData(files("$buildDir/jacoco/test.exec"))
-//        classDirectories.setFrom(
-//            sourceSets.main.get().output.asFileTree.matching {
-//                exclude("katsu/ui/**")
-//            }
-//        )
     }
 
     withType<JacocoCoverageVerification> {
-        //        executionData(files("$buildDir/jacoco/test.exec"))
         violationRules {
             rule {
                 element = "PACKAGE"
@@ -154,9 +146,6 @@ configure<TodoPluginExtension> {
     fileExtensions = listOf("kt")
 }
 
-//jacoco {
-//    toolVersion = "0.8.4"
-//}
 // =====================================================================================================================
 // PACKAGING MAC
 // =====================================================================================================================
