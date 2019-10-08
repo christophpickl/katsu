@@ -33,7 +33,7 @@ class KatsuFxApp : App(
         DatabaseMigrator(em).migrate()
         super.start(stage)
         val controller by kodein.instance<MainController>()
-        controller.initView()
+        controller.start()
     }
 
     override fun stop() {

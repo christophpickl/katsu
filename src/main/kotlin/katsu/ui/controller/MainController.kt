@@ -34,14 +34,13 @@ class MainController : Controller() {
         registrations += subscribe<DeleteClient> {
             deleteClient(it.clientId)
         }
-
     }
 
-    fun initView() {
+    fun start() {
         fire(ClientsReloaded(fetchAllClients()))
     }
 
-    fun fetchAllClients() = repository.fetchAll().map { it.toClient() }
+    private fun fetchAllClients() = repository.fetchAll().map { it.toClient() }
 
     fun fetch(id: Long): Client = repository.fetch(id).toClient()
 

@@ -7,7 +7,6 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 # TODO
 
 * !!! MVP:
-    * links liste mit namen (only)
     * ein einziges grosses textfeld mit notiz (plus namensfeld)
     * danach: rechts liste mit behandlungen (nur 4 entries zeigen)
     * ... wo drunter noch ein einziges grosses textfeld angezeigt wird (selber screen!)
