@@ -9,13 +9,13 @@ import javafx.scene.control.TextArea
 import javafx.scene.control.TextField
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
-import katsu.ui.ClientAdded
+import katsu.ui.ClientAddedEvent
 import katsu.ui.ClientData
-import katsu.ui.ClientDeleted
-import katsu.ui.ClientUpdated
-import katsu.ui.ClientsReloaded
-import katsu.ui.DeleteClient
-import katsu.ui.UpdateClient
+import katsu.ui.ClientDeletedEvent
+import katsu.ui.ClientUpdatedEvent
+import katsu.ui.ClientsReloadedEvent
+import katsu.ui.DeleteClientEvent
+import katsu.ui.UpdateClientEvent
 import katsu.ui.toClientData
 import mu.KotlinLogging.logger
 import tornadofx.FXEventRegistration
@@ -52,19 +52,20 @@ class MainView : View() {
         selectedClient.addListener { _: ObservableValue<out ClientData?>, _: ClientData?, newValue: ClientData? ->
             firstNameField.text = newValue?.firstName ?: ""
         }
-        registrations += subscribe<ClientAdded> { event ->
+        registrations += subscribe<ClientAddedEvent> { event ->
             clients += event.client.toClientData()
             clientsList.selectWhere { it.id == event.client.id }
         }
-        registrations += subscribe<ClientUpdated> { event ->
+        registrations += subscribe<ClientUpdatedEvent> { event ->
             val clientIndex = clients.indexOfFirst { it.id == event.client.id }
+            println("updated: ${event.client}")
             clients[clientIndex] = event.client.toClientData()
         }
-        registrations += subscribe<ClientDeleted> { event ->
+        registrations += subscribe<ClientDeletedEvent> { event ->
             clients.removeIf { it.id == event.clientId }
         }
-        registrations += subscribe<ClientsReloaded> {
-            clients.setAll(it.clients.map { it.toClientData() })
+        registrations += subscribe<ClientsReloadedEvent> { event ->
+            clients.setAll(event.clients.map { it.toClientData() })
         }
     }
 
@@ -92,32 +93,38 @@ class MainView : View() {
             notesField = textarea().apply {
                 id = ViewIds.TEXT_NOTES
             }
+
             separator(Orientation.HORIZONTAL)
 
-            button("Add new").apply {
-                id = ViewIds.BUTTON_ADD_CLIENT
-                action {
-                    logg.debug { "Add new client button clicked" }
-                    fire(AddNewClientEvent)
+            hbox {
+                button("Add new").apply {
+                    id = ViewIds.BUTTON_ADD_CLIENT
+                    action {
+                        logg.debug { "Add new client button clicked" }
+                        fire(AddNewClientEvent)
+                    }
                 }
-            }
-            button("save").apply {
-                enableWhen { selectedClient.isNotNull }
-                action {
-                    val currentClient = selectedClient.get().toClient().updateByView()
-                    fire(UpdateClient(currentClient))
+                button("save").apply {
+                    id = ViewIds.BUTTON_SAVE_CLIENT
+                    enableWhen { selectedClient.isNotNull }
+                    action {
+                        val currentClient = selectedClient.get().toClient().updateByView()
+                        fire(UpdateClientEvent(currentClient))
+                    }
                 }
-            }
-            button("delete").apply {
-                enableWhen { selectedClient.isNotNull }
-                action {
-                    fire(DeleteClient(selectedClient.get().id))
+                button("delete").apply {
+                    id = ViewIds.BUTTON_DELETE_CLIENT
+                    enableWhen { selectedClient.isNotNull }
+                    action {
+                        fire(DeleteClientEvent(selectedClient.get().id))
+                    }
                 }
             }
         }
     }
 
     private fun Client.updateByView() = copy(
-        firstName = firstNameField.text
+        firstName = firstNameField.text,
+        notes = notesField.text
     )
 }

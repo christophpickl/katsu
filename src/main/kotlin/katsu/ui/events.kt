@@ -4,12 +4,12 @@ import katsu.model.Client
 import tornadofx.FXEvent
 
 object AddNewClientEvent : FXEvent()
-class ClientAdded(val client: Client) : FXEvent()
+class ClientAddedEvent(val client: Client) : FXEvent()
 
-class UpdateClient(val client: Client) : FXEvent()
-class ClientUpdated(val client: Client) : FXEvent()
+class UpdateClientEvent(val client: Client) : FXEvent()
+class ClientUpdatedEvent(val client: Client) : FXEvent()
 
-class DeleteClient(val clientId: Long) : FXEvent()
-class ClientDeleted(val clientId: Long) : FXEvent()
+class DeleteClientEvent(val clientId: Long) : FXEvent()
+class ClientDeletedEvent(val clientId: Long) : FXEvent()
 
-class ClientsReloaded(val clients: List<Client>) : FXEvent()
+class ClientsReloadedEvent(val clients: List<Client>) : FXEvent()

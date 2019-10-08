@@ -36,6 +36,7 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 
 ## IT Driven
 
+* make UI tests headless: https://vocabhunter.github.io/2016/07/27/TestFX.html
 * introduce `buildSrc` gradle folder
 * ? `Thread.setDefaultUncaughtExceptionHandler`?
 * use more plugins? (kodein, javafx)

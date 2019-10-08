@@ -23,14 +23,16 @@ fun FxRobot.saveScreenshot(stage: Stage) {
 fun withKatsuFx(action: FxRobot.() -> Unit) {
     System.setProperty("katsu.env", "ui_test")
 
-    FxToolkit.registerPrimaryStage()
-    val application = FxToolkit.setupApplication(KatsuFxApp::class.java)
+    FxToolkit.registerPrimaryStage() // maybe do it @BeforeClass?
+    val application = FxToolkit.setupApplication(KatsuFxApp::class.java) // maybe do this @BeforeMethod?
     val robot = FxRobot()
 
-    robot.action()
-
-    FxToolkit.cleanupStages()
-    FxToolkit.cleanupApplication(application)
+    try {
+        robot.action()
+    } finally {
+        FxToolkit.cleanupStages()
+        FxToolkit.cleanupApplication(application)
+    }
 }
 
 fun byId(id: String) = Predicate<Node> { it.id == id }

@@ -2,6 +2,7 @@
 
 package katsu.model
 
+import katsu.persistence.NO_ID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -23,18 +24,43 @@ data class ClientDbo(
     @Column(name = "firstName", nullable = false, length = FIRST_NAME_LENGTH)
     var firstName: String,
 
-    @Column(name = "note", nullable = false)
-    var note: String
+    @Column(name = "notes", nullable = false)
+    var notes: String
 ) {
     companion object {
         const val ENTITY_NAME = "Client"
         const val TABLE_NAME = "client"
         const val FIRST_NAME_LENGTH = COL_LENGTH_LIL
     }
+
+    fun toClient() = Client(
+        id = id,
+        firstName = firstName,
+        notes = notes
+    )
+
+    fun updateBy(client: Client) {
+        firstName = client.firstName
+        notes = client.notes
+    }
 }
 
 data class Client(
     val id: Long,
     val firstName: String,
-    val note: String
-)
+    val notes: String
+) {
+    companion object {
+        val PROTOTYPE = Client(
+            id = NO_ID,
+            firstName = "",
+            notes = ""
+        )
+    }
+
+    fun toClientDbo() = ClientDbo(
+        id = NO_ID,
+        firstName = firstName,
+        notes = notes
+    )
+}

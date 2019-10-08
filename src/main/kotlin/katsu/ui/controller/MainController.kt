@@ -1,16 +1,15 @@
 package katsu.ui.controller
 
 import katsu.model.Client
-import katsu.model.ClientDbo
 import katsu.persistence.ClientRepository
 import katsu.persistence.NO_ID
 import katsu.ui.AddNewClientEvent
-import katsu.ui.ClientAdded
-import katsu.ui.ClientDeleted
-import katsu.ui.ClientUpdated
-import katsu.ui.ClientsReloaded
-import katsu.ui.DeleteClient
-import katsu.ui.UpdateClient
+import katsu.ui.ClientAddedEvent
+import katsu.ui.ClientDeletedEvent
+import katsu.ui.ClientUpdatedEvent
+import katsu.ui.ClientsReloadedEvent
+import katsu.ui.DeleteClientEvent
+import katsu.ui.UpdateClientEvent
 import mu.KotlinLogging.logger
 import org.kodein.di.generic.instance
 import org.kodein.di.tornadofx.kodein
@@ -26,18 +25,18 @@ class MainController : Controller() {
 
     init {
         registrations += subscribe<AddNewClientEvent> {
-            insertNewClient()
+            addNewClient()
         }
-        registrations += subscribe<UpdateClient> {
-            updateExistingClient(it.client)
+        registrations += subscribe<UpdateClientEvent> {
+            updateClient(it.client)
         }
-        registrations += subscribe<DeleteClient> {
+        registrations += subscribe<DeleteClientEvent> {
             deleteClient(it.clientId)
         }
     }
 
     fun start() {
-        fire(ClientsReloaded(fetchAllClients()))
+        fire(ClientsReloadedEvent(fetchAllClients()))
     }
 
     private fun fetchAllClients() = repository.fetchAll().map { it.toClient() }
@@ -48,14 +47,13 @@ class MainController : Controller() {
         registrations.forEach { it.unsubscribe() }
     }
 
-    private fun insertNewClient() {
-        val client = Client(NO_ID, "dummy", "some note")
-        fire(ClientAdded(insertOrUpdateClient(client)))
+    private fun addNewClient() {
+        fire(ClientAddedEvent(insertOrUpdateClient(Client.PROTOTYPE)))
     }
 
-    private fun updateExistingClient(client: Client) {
+    private fun updateClient(client: Client) {
         require(client.id != NO_ID) { "Not able to update a not yet persisted client!" }
-        fire(ClientUpdated(insertOrUpdateClient(client)))
+        fire(ClientUpdatedEvent(insertOrUpdateClient(client)))
     }
 
     private fun insertOrUpdateClient(client: Client): Client {
@@ -64,7 +62,7 @@ class MainController : Controller() {
             repository.save(client.toClientDbo())
         } else {
             val dbClient = repository.fetch(client.id)
-            dbClient.firstName = client.firstName
+            dbClient.updateBy(client)
             repository.save(dbClient)
         }.toClient()
     }
@@ -73,18 +71,6 @@ class MainController : Controller() {
         logg.info { "deleteClient(id=$id)" }
 
         repository.delete(id)
-        fire(ClientDeleted(id))
+        fire(ClientDeletedEvent(id))
     }
 }
-
-private fun Client.toClientDbo() = ClientDbo(
-    id = NO_ID,
-    firstName = firstName,
-    note = note
-)
-
-private fun ClientDbo.toClient() = Client(
-    id = id,
-    firstName = firstName,
-    note = note
-)
