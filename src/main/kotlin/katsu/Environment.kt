@@ -11,11 +11,13 @@ enum class Environment(
 
     companion object {
         private val log = logger {}
+        private val DEFAULT = Environment.DEV
 
-        val current: Environment = System.getProperty("katsu.env", "").toLowerCase().let { propertyValue ->
-            values().find { it.cliArgValue == propertyValue }?.also { log.info { "Detected environment: $it" } }
-                ?: throw IllegalStateException("Invalid katsu.env set: '$propertyValue'")
-        }
+        var current: Environment =
+            System.getProperty("katsu.env", "").toLowerCase().let { propertyValue ->
+                values().find { it.cliArgValue == propertyValue }?.also { log.info { "Detected environment: $it" } }
+                    ?: DEFAULT // throw IllegalStateException("Invalid katsu.env set: '$propertyValue'")
+            }
 
         val isProd = current == PROD
     }

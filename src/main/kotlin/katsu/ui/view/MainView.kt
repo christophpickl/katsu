@@ -11,13 +11,13 @@ import javafx.scene.layout.Priority
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
 import katsu.ui.ClientAddedEvent
-import katsu.ui.ClientData
 import katsu.ui.ClientDeletedEvent
+import katsu.ui.ClientUi
 import katsu.ui.ClientUpdatedEvent
 import katsu.ui.ClientsReloadedEvent
 import katsu.ui.DeleteClientEvent
 import katsu.ui.UpdateClientEvent
-import katsu.ui.toClientData
+import katsu.ui.toClientUi
 import mu.KotlinLogging.logger
 import tornadofx.FXEventRegistration
 import tornadofx.View
@@ -42,36 +42,36 @@ class MainView : View() {
 
     private val logg = logger {}
 
-    private val clients = ObservableListWrapper<ClientData>(mutableListOf())
-    private val selectedClient = SimpleObjectProperty<ClientData>()
+    private val clients = ObservableListWrapper<ClientUi>(mutableListOf())
+    private val selectedClient = SimpleObjectProperty<ClientUi>()
     private val registrations = mutableListOf<FXEventRegistration>()
 
-    private var clientsList: ListView<ClientData> by singleAssign()
+    private var clientsList: ListView<ClientUi> by singleAssign()
     private var firstNameField: TextField by singleAssign()
     private var notesField: TextArea by singleAssign()
 
     init {
         title = "Katsu"
-        selectedClient.addListener { _: ObservableValue<out ClientData?>, _: ClientData?, newValue: ClientData? ->
+        selectedClient.addListener { _: ObservableValue<out ClientUi?>, _: ClientUi?, newValue: ClientUi? ->
             updateFields(newValue)
         }
         registrations += subscribe<ClientAddedEvent> { event ->
-            clients += event.client.toClientData()
+            clients += event.client.toClientUi()
             clientsList.selectWhere { it.id == event.client.id }
         }
         registrations += subscribe<ClientUpdatedEvent> { event ->
             val clientIndex = clients.indexOfFirst { it.id == event.client.id }
-            clients[clientIndex] = event.client.toClientData()
+            clients[clientIndex] = event.client.toClientUi()
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
             clients.removeIf { it.id == event.clientId }
         }
         registrations += subscribe<ClientsReloadedEvent> { event ->
-            clients.setAll(event.clients.map { it.toClientData() })
+            clients.setAll(event.clients.map { it.toClientUi() })
         }
     }
 
-    private fun updateFields(client: ClientData?) {
+    private fun updateFields(client: ClientUi?) {
         firstNameField.text = client?.firstName ?: ""
         notesField.text = client?.notes ?: ""
     }

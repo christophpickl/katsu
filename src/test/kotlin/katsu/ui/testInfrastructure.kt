@@ -4,6 +4,7 @@ package katsu.ui
 
 import javafx.scene.Node
 import javafx.stage.Stage
+import katsu.Environment
 import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
 import java.nio.file.Paths
@@ -21,7 +22,8 @@ fun FxRobot.saveScreenshot(stage: Stage) {
 }
 
 fun withKatsuFx(action: FxRobot.() -> Unit) {
-    System.setProperty("katsu.env", "ui_test")
+    val previousEnvironment = Environment.current
+    Environment.current = Environment.UI_TEST
 
     FxToolkit.registerPrimaryStage() // maybe do it @BeforeClass?
     val application = FxToolkit.setupApplication(KatsuFxApp::class.java) // maybe do this @BeforeMethod?
@@ -30,6 +32,7 @@ fun withKatsuFx(action: FxRobot.() -> Unit) {
     try {
         robot.action()
     } finally {
+        Environment.current = previousEnvironment
         FxToolkit.cleanupStages()
         FxToolkit.cleanupApplication(application)
     }

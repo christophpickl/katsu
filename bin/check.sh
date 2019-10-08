@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-./gradlew clean test check checkTodo jacocoTestCoverageVerification
+./gradlew clean check checkTodo test jacocoTestCoverageVerification
 
 if [ $? -ne 0 ]; then
   exit

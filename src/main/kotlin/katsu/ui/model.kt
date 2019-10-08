@@ -6,19 +6,19 @@ import katsu.model.Client
 import tornadofx.getProperty
 import tornadofx.property
 
-class ClientData(client: Client) {
+class ClientUi(client: Client) {
     var id by property<Long>(client.id)
-    fun idProperty() = getProperty(ClientData::id)
+    fun idProperty() = getProperty(ClientUi::id)
 
     var firstName by property<String>(client.firstName)
-    fun firstNameProperty() = getProperty(ClientData::firstName)
+    fun firstNameProperty() = getProperty(ClientUi::firstName)
 
     var notes by property<String>(client.notes)
-    fun notesProperty() = getProperty(ClientData::notes)
+    fun notesProperty() = getProperty(ClientUi::notes)
 
     fun toClient() = Client(id = id, firstName = firstName, notes = notes)
 
     override fun toString() = "ClientData[id=$id, firstName=$firstName]"
 }
 
-fun Client.toClientData() = ClientData(this)
+fun Client.toClientUi() = ClientUi(this)

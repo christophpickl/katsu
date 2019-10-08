@@ -12,7 +12,7 @@ import tornadofx.selectedItem
 
 // https://github.com/TestFX/TestFX
 // https://github.com/edvin/tornadofx/tree/master/src/test/kotlin/tornadofx/tests
-@Test(groups = ["uiTest"])
+@Test(groups = ["ui"])
 class UiTest {
 
     private val firstName = "f"
@@ -48,7 +48,7 @@ class UiTest {
         ))
     }
 
-    private fun FxRobot.clientList() = lookup(byId(ViewIds.LIST_CLIENTS)).query<ListView<ClientData>>()
+    private fun FxRobot.clientList() = lookup(byId(ViewIds.LIST_CLIENTS)).query<ListView<ClientUi>>()
 
     private fun FxRobot.clickById(id: String) {
         clickOn(byId(id))

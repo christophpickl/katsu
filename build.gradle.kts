@@ -2,10 +2,10 @@ import com.autoscout24.gradle.TodoPluginExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import edu.sc.seis.macAppBundle.MacAppBundlePluginExtension
 import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 version = 1.0
-
 
 val myMainClassName = "katsu.Katsu"
 val myAppName = "Katsu"
@@ -75,8 +75,15 @@ tasks {
 
     withType<Test> {
         useTestNG {
-            if (System.getProperty("katsu.uiTest") == null) {
-                excludeGroups = setOf("uiTest")
+            if (System.getProperty("katsu.uiTest") != null) {
+                println("[KATSU] UI tests")
+                includeGroups("ui")
+            } else {
+                println("[KATSU] unit tests")
+                excludeGroups("ui")
+            }
+            testLogging {
+                events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED)
             }
         }
     }
@@ -114,20 +121,27 @@ tasks {
         reports {
             html.isEnabled = false
             xml.isEnabled = false
-            // executionData(withType<Test>())
+//             executionData(withType<Test>())
         }
+//        executionData(files("$buildDir/jacoco/test.exec"))
+//        classDirectories.setFrom(
+//            sourceSets.main.get().output.asFileTree.matching {
+//                exclude("katsu/ui/**")
+//            }
+//        )
     }
 
     withType<JacocoCoverageVerification> {
+        //        executionData(files("$buildDir/jacoco/test.exec"))
         violationRules {
             rule {
                 element = "PACKAGE"
                 limit {
-                    counter = "LINE"
+                    counter = "INSTRUCTION"
                     value = "COVEREDRATIO"
                     minimum = BigDecimal(minimumLineCoverage)
                 }
-                excludes = listOf("katsu.ui.*", "katsu.ui")
+                excludes = listOf("katsu.ui", "katsu.ui.*")
             }
         }
     }
@@ -140,6 +154,9 @@ configure<TodoPluginExtension> {
     fileExtensions = listOf("kt")
 }
 
+//jacoco {
+//    toolVersion = "0.8.4"
+//}
 // =====================================================================================================================
 // PACKAGING MAC
 // =====================================================================================================================

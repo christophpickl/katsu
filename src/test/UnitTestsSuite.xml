@@ -3,7 +3,7 @@
     <test name="UnitTests">
         <groups>
             <run>
-                <exclude name="uiTest"/>
+                <include name="unitTest"/>
             </run>
         </groups>
         <packages>
