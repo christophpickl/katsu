@@ -20,7 +20,7 @@ data class ClientDbo(
     @Column(name = "id", nullable = false)
     val id: Long,
 
-    @Column(name = "firstName", nullable = false, length = COL_LENGTH_LIL)
+    @Column(name = "firstName", nullable = false, length = FIRST_NAME_LENGTH)
     var firstName: String,
 
     @Column(name = "note", nullable = false)
@@ -29,6 +29,7 @@ data class ClientDbo(
     companion object {
         const val ENTITY_NAME = "Client"
         const val TABLE_NAME = "client"
+        const val FIRST_NAME_LENGTH = COL_LENGTH_LIL
     }
 }
 

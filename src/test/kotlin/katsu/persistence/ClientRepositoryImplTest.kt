@@ -9,11 +9,14 @@ import assertk.assertions.isEqualToIgnoringGivenProperties
 import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
+import assertk.assertions.isSuccess
 import assertk.assertions.messageContains
+import com.github.christophpickl.kpotpourri.common.string.times
 import katsu.model.ClientDbo
 import katsu.model.testInstance
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+import javax.persistence.PersistenceException
 
 @Test
 class ClientRepositoryImplTest {
@@ -26,10 +29,11 @@ class ClientRepositoryImplTest {
         client = ClientDbo.testInstance().copy(id = NO_ID)
     }
 
-    fun `When save client Then then it is persisted`() = withTestDb {
+    fun `When save client Then it is persisted`() = withTestDb {
         ClientRepositoryImpl(em).save(client)
 
         val found = em.find(ClientDbo::class.java, client.id)
+
         assertThat(found).isEqualTo(client)
     }
 
@@ -69,21 +73,24 @@ class ClientRepositoryImplTest {
         }
     }
 
-    fun `Given client When delete that client Then no clients exist`() = withTestDb {
+    fun `Given client When delete that client Then no clients exist anymore`() = withTestDb {
         persist(client)
 
         ClientRepositoryImpl(em).delete(client.id)
 
         assertThat(em.createQuery("from ${ClientDbo.ENTITY_NAME}", ClientDbo::class.java).resultList).isEmpty()
     }
-}
 
-private fun TestDbContext.persist(client: ClientDbo) {
-    em.transactional {
-        persist(client)
+    fun `Given client with maximum length When persist Then succeed`() = withTestDb {
+        assertThat {
+            persist(client.copy(firstName = "x".times(ClientDbo.FIRST_NAME_LENGTH)))
+        }.isSuccess()
     }
-}
 
-fun TestDbContext.migrate() {
-    DatabaseMigrator(em).migrate()
+    fun `Given client with more than maximum length When persist Then fail`() = withTestDb {
+        assertThat {
+            persist(client.copy(firstName = "x".times(ClientDbo.FIRST_NAME_LENGTH + 1)))
+        }.isFailure()
+            .isInstanceOf(PersistenceException::class)
+    }
 }

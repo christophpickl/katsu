@@ -4,6 +4,8 @@ import com.sun.javafx.collections.ObservableListWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Orientation
+import javafx.scene.control.ListView
+import javafx.scene.control.TextArea
 import javafx.scene.control.TextField
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
@@ -26,18 +28,24 @@ import tornadofx.hbox
 import tornadofx.label
 import tornadofx.listview
 import tornadofx.multiSelect
+import tornadofx.selectWhere
 import tornadofx.separator
 import tornadofx.singleAssign
+import tornadofx.textarea
 import tornadofx.textfield
 import tornadofx.vbox
 
 class MainView : View() {
 
     private val logg = logger {}
-    private val selectedClient = SimpleObjectProperty<ClientData>()
+
     private val clients = ObservableListWrapper<ClientData>(mutableListOf())
-    private var firstNameField: TextField by singleAssign()
+    private val selectedClient = SimpleObjectProperty<ClientData>()
     private val registrations = mutableListOf<FXEventRegistration>()
+
+    private var clientsList: ListView<ClientData> by singleAssign()
+    private var firstNameField: TextField by singleAssign()
+    private var notesField: TextArea by singleAssign()
 
     init {
         title = "Katsu"
@@ -46,6 +54,7 @@ class MainView : View() {
         }
         registrations += subscribe<ClientAdded> { event ->
             clients += event.client.toClientData()
+            clientsList.selectWhere { it.id == event.client.id }
         }
         registrations += subscribe<ClientUpdated> { event ->
             val clientIndex = clients.indexOfFirst { it.id == event.client.id }
@@ -65,14 +74,10 @@ class MainView : View() {
 
     override val root = hbox {
         vbox {
-            listview(clients) {
+            clientsList = listview(clients) {
                 id = ViewIds.LIST_CLIENTS
                 multiSelect(false)
                 bindSelected(selectedClient)
-//                onUserSelect(clickCount = 1) {
-                selectionModel.selectedItemProperty().addListener { _, oldValue, newValue ->
-                    println("old: $oldValue, new $newValue")
-                }
                 cellFormat {
                     text = it.firstName
                 }
@@ -82,6 +87,10 @@ class MainView : View() {
             label("First Name")
             firstNameField = textfield().apply {
                 id = ViewIds.TEXT_FIRSTNAME
+            }
+            label("Notes")
+            notesField = textarea().apply {
+                id = ViewIds.TEXT_NOTES
             }
             separator(Orientation.HORIZONTAL)
 

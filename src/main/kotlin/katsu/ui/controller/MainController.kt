@@ -50,25 +50,23 @@ class MainController : Controller() {
 
     private fun insertNewClient() {
         val client = Client(NO_ID, "dummy", "some note")
-        insertOrUpdateClient(client)
-        fire(ClientAdded(client))
+        fire(ClientAdded(insertOrUpdateClient(client)))
     }
 
     private fun updateExistingClient(client: Client) {
         require(client.id != NO_ID) { "Not able to update a not yet persisted client!" }
-        insertOrUpdateClient(client)
-        fire(ClientUpdated(client))
+        fire(ClientUpdated(insertOrUpdateClient(client)))
     }
 
-    private fun insertOrUpdateClient(client: Client) {
+    private fun insertOrUpdateClient(client: Client): Client {
         logg.info { "insertOrUpdateClient(client=$client)" }
-        if (client.id == NO_ID) {
+        return if (client.id == NO_ID) {
             repository.save(client.toClientDbo())
         } else {
             val dbClient = repository.fetch(client.id)
             dbClient.firstName = client.firstName
             repository.save(dbClient)
-        }
+        }.toClient()
     }
 
     private fun deleteClient(id: Long) {

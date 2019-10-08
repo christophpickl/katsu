@@ -2,6 +2,7 @@
 
 package katsu.persistence
 
+import katsu.model.ClientDbo
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import javax.persistence.EntityManager
@@ -39,4 +40,14 @@ fun withTestDb(
 
 class TestDbContext(
     val em: EntityManager
-)
+) {
+    fun migrate() {
+        DatabaseMigrator(em).migrate()
+    }
+
+    fun persist(client: ClientDbo) {
+        em.transactional {
+            persist(client)
+        }
+    }
+}

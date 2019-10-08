@@ -4,10 +4,8 @@ import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import javafx.scene.control.ListView
-import javafx.scene.input.MouseButton
 import katsu.ui.view.ViewIds
 import org.testfx.api.FxRobot
-import org.testfx.robot.Motion
 import org.testng.annotations.Test
 
 // https://github.com/TestFX/TestFX
@@ -19,23 +17,27 @@ class UiTest {
         val list = findClientList()
         assertThat(list.items).isEmpty()
 
-        addClient()
+        clickAddClient()
 
         assertThat(list.items).hasSize(1)
     }
 
-    fun `When add client Then client list size increased2`() = withKatsuFx {
+    fun `Given two clients When change data and save and go back and forth Then fields are updated`() = withKatsuFx {
         val list = findClientList()
-        assertThat(list.items).isEmpty()
 
-        addClient()
+        clickAddClient()
+        clickAddClient()
+
+        sleep(500)
+        clickOn(byId(ViewIds.TEXT_FIRSTNAME))
+        sleep(2_000)
 
         assertThat(list.items).hasSize(1)
     }
 
     private fun FxRobot.findClientList() = lookup(byId(ViewIds.LIST_CLIENTS)).query<ListView<*>>()
 
-    private fun FxRobot.addClient() {
-        clickOn(byId(ViewIds.BUTTON_ADD_CLIENT), Motion.DIRECT, MouseButton.PRIMARY)
+    private fun FxRobot.clickAddClient() {
+        clickOn(byId(ViewIds.BUTTON_ADD_CLIENT))
     }
 }
