@@ -21,7 +21,8 @@ fun appKodein() = Kodein {
 }
 
 class KatsuFxApp : App(
-    primaryView = MainView::class
+    primaryView = MainView::class,
+    stylesheet = Styles::class
 ), KodeinAware {
 
     private val log = logger {}

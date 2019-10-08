@@ -7,6 +7,7 @@ import javafx.geometry.Orientation
 import javafx.scene.control.ListView
 import javafx.scene.control.TextArea
 import javafx.scene.control.TextField
+import javafx.scene.layout.Priority
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
 import katsu.ui.ClientAddedEvent
@@ -25,6 +26,7 @@ import tornadofx.bindSelected
 import tornadofx.button
 import tornadofx.enableWhen
 import tornadofx.hbox
+import tornadofx.hgrow
 import tornadofx.label
 import tornadofx.listview
 import tornadofx.multiSelect
@@ -34,6 +36,7 @@ import tornadofx.singleAssign
 import tornadofx.textarea
 import tornadofx.textfield
 import tornadofx.vbox
+import tornadofx.vgrow
 
 class MainView : View() {
 
@@ -50,7 +53,7 @@ class MainView : View() {
     init {
         title = "Katsu"
         selectedClient.addListener { _: ObservableValue<out ClientData?>, _: ClientData?, newValue: ClientData? ->
-            firstNameField.text = newValue?.firstName ?: ""
+            updateFields(newValue)
         }
         registrations += subscribe<ClientAddedEvent> { event ->
             clients += event.client.toClientData()
@@ -58,7 +61,6 @@ class MainView : View() {
         }
         registrations += subscribe<ClientUpdatedEvent> { event ->
             val clientIndex = clients.indexOfFirst { it.id == event.client.id }
-            println("updated: ${event.client}")
             clients[clientIndex] = event.client.toClientData()
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
@@ -69,6 +71,11 @@ class MainView : View() {
         }
     }
 
+    private fun updateFields(client: ClientData?) {
+        firstNameField.text = client?.firstName ?: ""
+        notesField.text = client?.notes ?: ""
+    }
+
     fun unsubscribeAll() {
         registrations.forEach { it.unsubscribe() }
     }
@@ -76,6 +83,7 @@ class MainView : View() {
     override val root = hbox {
         vbox {
             clientsList = listview(clients) {
+                vgrow = Priority.ALWAYS
                 id = ViewIds.LIST_CLIENTS
                 multiSelect(false)
                 bindSelected(selectedClient)
@@ -85,26 +93,31 @@ class MainView : View() {
             }
         }
         vbox {
+            hgrow = Priority.ALWAYS
             label("First Name")
             firstNameField = textfield().apply {
+                hgrow = Priority.ALWAYS
                 id = ViewIds.TEXT_FIRSTNAME
             }
             label("Notes")
             notesField = textarea().apply {
                 id = ViewIds.TEXT_NOTES
+                hgrow = Priority.ALWAYS
+                vgrow = Priority.ALWAYS
             }
 
             separator(Orientation.HORIZONTAL)
 
             hbox {
-                button("Add new").apply {
-                    id = ViewIds.BUTTON_ADD_CLIENT
+                button("New").apply {
+                    id = ViewIds.BUTTON_NEW_CLIENT
                     action {
                         logg.debug { "Add new client button clicked" }
                         fire(AddNewClientEvent)
+                        firstNameField.requestFocus()
                     }
                 }
-                button("save").apply {
+                button("Save").apply {
                     id = ViewIds.BUTTON_SAVE_CLIENT
                     enableWhen { selectedClient.isNotNull }
                     action {
@@ -112,7 +125,7 @@ class MainView : View() {
                         fire(UpdateClientEvent(currentClient))
                     }
                 }
-                button("delete").apply {
+                button("Delete").apply {
                     id = ViewIds.BUTTON_DELETE_CLIENT
                     enableWhen { selectedClient.isNotNull }
                     action {
