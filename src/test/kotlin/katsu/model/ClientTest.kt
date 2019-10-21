@@ -15,7 +15,8 @@ class ClientTest {
         assertThat(dbo).isEqualTo(ClientDbo(
             id = client.id,
             firstName = client.firstName,
-            notes = client.notes
+            notes = client.notes,
+            treatments = mutableListOf()
         ))
     }
 

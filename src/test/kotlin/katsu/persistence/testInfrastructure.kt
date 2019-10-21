@@ -3,6 +3,7 @@
 package katsu.persistence
 
 import katsu.model.ClientDbo
+import katsu.model.TreatmentDbo
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import javax.persistence.EntityManager
@@ -45,9 +46,17 @@ class TestDbContext(
         DatabaseMigrator(em).migrate()
     }
 
-    fun persist(client: ClientDbo) {
+    fun persist(vararg entities: Any) {
         em.transactional {
-            persist(client)
+            entities.forEach {
+                persist(it)
+            }
         }
     }
+
+    fun EntityManager.findAllClients() =
+        createQuery("from ${ClientDbo.ENTITY_NAME}", ClientDbo::class.java).resultList
+
+    fun EntityManager.findAllTreatments() =
+        createQuery("from ${TreatmentDbo.ENTITY_NAME}", TreatmentDbo::class.java).resultList
 }

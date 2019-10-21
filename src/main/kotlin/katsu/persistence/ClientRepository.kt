@@ -15,7 +15,9 @@ class ClientRepositoryImpl(
 ) : ClientRepository {
 
     override fun fetch(id: Long): ClientDbo =
-        em.find(ClientDbo::class.java, id) ?: throw ClientNotFoundException(id)
+        em.find(ClientDbo::class.java, id)?.also { client ->
+            client.treatments.sortByDescending { it.date }
+        } ?: throw ClientNotFoundException(id)
 
     override fun fetchAll(): List<ClientDbo> =
         em.createQuery("from ${ClientDbo.ENTITY_NAME}", ClientDbo::class.java).resultList

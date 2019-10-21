@@ -20,5 +20,6 @@ enum class Environment(
             }
 
         val isProd = current == PROD
+        val isDev = current == DEV
     }
 }

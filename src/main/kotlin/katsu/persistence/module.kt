@@ -5,7 +5,6 @@ package katsu.persistence
 import katsu.Environment
 import katsu.Katsu
 import katsu.KoinModules
-import katsu.model.ClientDbo
 import mu.KotlinLogging.logger
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
@@ -16,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.persistence.EntityManager
 
 private val log = logger {}
-val katsuManagedClasses = listOf(ClientDbo::class)
 
 val Katsu.Configuration.Directories.database
     get() = File(applicationHome, "database")

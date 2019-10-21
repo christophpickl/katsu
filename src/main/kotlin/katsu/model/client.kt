@@ -3,15 +3,15 @@
 package katsu.model
 
 import katsu.persistence.NO_ID
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
-
-const val COL_LENGTH_LIL = 128
-// const val COL_LENGTH_MED = 512
 
 @Entity(name = ClientDbo.ENTITY_NAME)
 @Table(name = ClientDbo.TABLE_NAME)
@@ -25,7 +25,10 @@ data class ClientDbo(
     var firstName: String,
 
     @Column(name = "notes", nullable = false)
-    var notes: String
+    var notes: String,
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    var treatments: MutableList<TreatmentDbo> = mutableListOf()
 ) {
     companion object {
         const val ENTITY_NAME = "Client"
@@ -62,6 +65,7 @@ data class Client(
     fun toClientDbo() = ClientDbo(
         id = NO_ID,
         firstName = firstName,
-        notes = notes
+        notes = notes,
+        treatments = mutableListOf()
     )
 }

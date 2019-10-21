@@ -2,6 +2,8 @@ package katsu.persistence
 
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
@@ -13,9 +15,11 @@ import assertk.assertions.isSuccess
 import assertk.assertions.messageContains
 import com.github.christophpickl.kpotpourri.common.string.times
 import katsu.model.ClientDbo
+import katsu.model.TreatmentDbo
 import katsu.model.testInstance
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+import java.time.LocalDateTime
 import javax.persistence.PersistenceException
 
 @Test
@@ -78,7 +82,7 @@ class ClientRepositoryImplTest {
 
         ClientRepositoryImpl(em).delete(client.id)
 
-        assertThat(em.createQuery("from ${ClientDbo.ENTITY_NAME}", ClientDbo::class.java).resultList).isEmpty()
+        assertThat(em.findAllClients()).isEmpty()
     }
 
     fun `Given client with maximum length When persist Then succeed`() = withTestDb {
@@ -92,5 +96,48 @@ class ClientRepositoryImplTest {
             persist(client.copy(firstName = "x".times(ClientDbo.FIRST_NAME_LENGTH + 1)))
         }.isFailure()
             .isInstanceOf(PersistenceException::class)
+    }
+}
+
+@Test
+class ClientRepositoryImplWithTreatmentTest {
+
+    private lateinit var client: ClientDbo
+    private lateinit var treatment: TreatmentDbo
+
+    @BeforeMethod
+    fun `reset state`() {
+        client = ClientDbo.testInstance().copy(id = NO_ID)
+        treatment = TreatmentDbo.testInstance()
+    }
+
+    fun `When save client with treatment Then both are saved and ID is set`() = withTestDb {
+        val returned = ClientRepositoryImpl(em).save(client.copy(treatments = mutableListOf(treatment)))
+
+        assertThat(returned.treatments.toList()).containsExactly(treatment)
+        assertThat(treatment.id).isNotEqualTo(NO_ID)
+    }
+
+    fun `Given client with treatment When delete client Then both are deleted`() = withTestDb {
+        persist(treatment)
+        client.treatments = mutableListOf(treatment)
+        persist(client)
+
+        ClientRepositoryImpl(em).delete(client.id)
+
+        assertThat(em.findAllClients()).isEmpty()
+        assertThat(em.findAllTreatments()).isEmpty()
+    }
+
+    fun `Given client with two treatments When fetch client Then treatments returned are ordered`() = withTestDb {
+        val treatmentPast = TreatmentDbo.testInstance().copy(date = LocalDateTime.now().minusDays(1))
+        val treatmentFuture = TreatmentDbo.testInstance().copy(date = LocalDateTime.now().plusDays(1))
+        persist(treatmentPast, treatmentFuture)
+        client.treatments = mutableListOf(treatmentPast, treatmentFuture)
+        persist(client)
+
+        val fetched = ClientRepositoryImpl(em).fetch(client.id)
+
+        assertThat(fetched.treatments).extracting { it.id }.containsExactly(treatmentFuture.id, treatmentPast.id)
     }
 }
