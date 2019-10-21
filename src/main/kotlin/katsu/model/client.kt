@@ -48,6 +48,7 @@ data class ClientDbo(
 data class Client(
     val id: Long,
     val firstName: String,
+    /** HTML text */
     val notes: String
 ) {
     companion object {

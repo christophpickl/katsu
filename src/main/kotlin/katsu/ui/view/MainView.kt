@@ -5,9 +5,9 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Orientation
 import javafx.scene.control.ListView
-import javafx.scene.control.TextArea
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import javafx.scene.web.HTMLEditor
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
 import katsu.ui.ClientAddedEvent
@@ -27,13 +27,13 @@ import tornadofx.button
 import tornadofx.enableWhen
 import tornadofx.hbox
 import tornadofx.hgrow
+import tornadofx.htmleditor
 import tornadofx.label
 import tornadofx.listview
 import tornadofx.multiSelect
 import tornadofx.selectWhere
 import tornadofx.separator
 import tornadofx.singleAssign
-import tornadofx.textarea
 import tornadofx.textfield
 import tornadofx.vbox
 import tornadofx.vgrow
@@ -48,7 +48,7 @@ class MainView : View() {
 
     private var clientsList: ListView<ClientUi> by singleAssign()
     private var firstNameField: TextField by singleAssign()
-    private var notesField: TextArea by singleAssign()
+    private var notesField: HTMLEditor by singleAssign()
 
     init {
         title = "Katsu"
@@ -73,7 +73,7 @@ class MainView : View() {
 
     private fun updateFields(client: ClientUi?) {
         firstNameField.text = client?.firstName ?: ""
-        notesField.text = client?.notes ?: ""
+        notesField.htmlText = client?.notes ?: ""
     }
 
     fun unsubscribeAll() {
@@ -100,7 +100,7 @@ class MainView : View() {
                 id = ViewIds.TEXT_FIRSTNAME
             }
             label("Notes")
-            notesField = textarea().apply {
+            notesField = htmleditor().apply {
                 id = ViewIds.TEXT_NOTES
                 hgrow = Priority.ALWAYS
                 vgrow = Priority.ALWAYS
@@ -138,6 +138,6 @@ class MainView : View() {
 
     private fun Client.updateByView() = copy(
         firstName = firstNameField.text,
-        notes = notesField.text
+        notes = notesField.htmlText
     )
 }
