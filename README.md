@@ -4,25 +4,17 @@ A shiatsu management desktop application, using Kotlin and TornadoFX (Kotlin-ish
 
 It's a complete rewrite and slimmed version of the old [Gadsu](https://github.com/christophpickl/gadsu).
 
-
 # Roadmap
 
-* // do prefs hardcoded in kotlin (it's just for me)
+# Phase 0
+* rich text textfields (HTML? somehow make easy to highlight like with CMD+B)
+* FINISH: rechts liste mit behandlungen (nur 4 entries zeigen)
+    * persistence done; needs UI and integration
 
-## Phase 1 - MVP
-
-* links liste mit namen (only)
-* ein einziges grosses textfeld mit notiz (plus namensfeld)
-* autosave (on client change, on exit)
-* auto release: create GIT tag, backup old DB prod-data, and automatically replace *.app file
-
-## Phase 2
-
-* danach: rechts liste mit behandlungen (nur 4 entries zeigen)
-	* ... wo drunter noch ein einziges grosses textfeld angezeigt wird (selber screen!)
+# Phase 1
 * treatment list (single textfield, date)
 * client picture: jpg+png, auto resize, auto crop
-* rich text textfields (HTML? somehow make easy to highlight like with CMD+B)
+* moooar fields (client ABC type, donation type, birthday, names, gender, text sections)
 * moooar client fields
 	- client ABC type
 	- donation type
@@ -33,24 +25,30 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 	- accept DSGVO, accept mails
 * mooar treatment fields:
 	- text sections
-	- donation money amount (can be used to calculate "client importance")
+	- donation money amount (can be used to calculate "client importance") 
 * client treatment cooldown, treatment counter indicator
+* treatment list (single textfield, date)
 
-## Phase 3
-
+# Phase 2
+* client treatment cooldown, treatment counter indicator
+* autosave (on client change, on exit)
 * extended client search/filter/ordering
 * birthday reminder
 * mail integration (templates; rich format html? own freeshiatsu address?) 
+
+# Phase 3
 * calendar integration
-
-## Phase X
-
 * treatment goal indicator
 * doodle integration
 * manage invitations (store mail + mail type), manage response
+* treatment goal indicator
+
 
 # IT Driven
 
+* !! TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
+* try TeamCity CI: https://www.jetbrains.com/teamcity/promo/free-ci/?
+* make UI tests headless: https://vocabhunter.github.io/2016/07/27/TestFX.html
 * introduce `buildSrc` gradle folder
 * ? `Thread.setDefaultUncaughtExceptionHandler`?
 * use more plugins? (kodein, javafx)

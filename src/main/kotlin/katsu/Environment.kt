@@ -1,18 +1,25 @@
 package katsu
 
+import mu.KotlinLogging.logger
+
 enum class Environment(
     val cliArgValue: String
 ) {
     PROD("prod"),
-    DEV("dev");
+    DEV("dev"),
+    UI_TEST("ui_test");
 
     companion object {
-        private val default = DEV
+        private val log = logger {}
+        private val DEFAULT = Environment.DEV
 
-        val current = System.getProperty("katsu.env", "").toLowerCase().let { propertyValue ->
-            values().find { it.cliArgValue == propertyValue } ?: default
-        }
+        var current: Environment =
+            System.getProperty("katsu.env", "").toLowerCase().let { propertyValue ->
+                values().find { it.cliArgValue == propertyValue }?.also { log.info { "Detected environment: $it" } }
+                    ?: DEFAULT // throw IllegalStateException("Invalid katsu.env set: '$propertyValue'")
+            }
 
         val isProd = current == PROD
+        val isDev = current == DEV
     }
 }

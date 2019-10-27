@@ -1,5 +1,6 @@
 package katsu.persistence
 
+import katsu.Konfig
 import org.h2.Driver
 import org.h2.jdbcx.JdbcDataSource
 import org.hibernate.jpa.HibernatePersistenceProvider
@@ -33,6 +34,11 @@ object DatabaseOpener {
             put("driver", Driver::class.java.name)
             put("hibernate.dialect", "org.hibernate.dialect.H2Dialect")
             put("hibernate.hbm2ddl.auto", config.ddlMode.propertyValue)
+            if (Konfig.enableHibernateLog) {
+                put("hibernate.show_sql", true)
+                put("hibernate.format_sql", true)
+                put("hibernate.use_sql_comments", true)
+            }
         }
         val dataSource = JdbcDataSource()
         dataSource.setURL(config.connection.dataSourceUrl)
@@ -53,6 +59,7 @@ sealed class HibernateConnection {
     class InMemoryConnection(name: String) : HibernateConnection() {
         override val dataSourceUrl = "jdbc:h2:mem:$name;DB_CLOSE_DELAY=-1"
     }
+
     class FileConnection(db: File) : HibernateConnection() {
         override val dataSourceUrl = "jdbc:h2:${db.canonicalPath}"
     }
@@ -87,5 +94,4 @@ private class PersistenceUnitInfoImpl(
     override fun getNewTempClassLoader(): ClassLoader? = null
     override fun getPersistenceUnitRootUrl(): URL? = null
     override fun getJtaDataSource(): DataSource? = null
-
 }

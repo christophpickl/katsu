@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="UnitTestsSuite" verbose="1">
+    <test name="UnitTests">
+        <groups>
+            <run>
+                <include name="unitTest"/>
+            </run>
+        </groups>
+        <packages>
+            <package name="katsu.*"/>
+        </packages>
+    </test>
+</suite>

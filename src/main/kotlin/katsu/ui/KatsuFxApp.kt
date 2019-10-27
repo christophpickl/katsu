@@ -12,37 +12,39 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import org.kodein.di.tornadofx.installTornadoSource
 import tornadofx.App
-import tornadofx.find
 import javax.persistence.EntityManager
 
-val appKodein = Kodein {
+fun appKodein() = Kodein {
     import(KoinModules.uiModule)
     import(KoinModules.persistenceModule)
     installTornadoSource()
 }
 
 class KatsuFxApp : App(
-    primaryView = MainView::class
+    primaryView = MainView::class,
+    stylesheet = Styles::class
 ), KodeinAware {
-
-    init {
-        // eager load controller to make event subscription work
-        find(MainController::class)
-    }
 
     private val log = logger {}
 
-    override val kodein = appKodein
-    private val em by kodein.instance<EntityManager>()
+    override var kodein = appKodein()
 
     override fun start(stage: Stage) {
-        super.start(stage)
+        val em by kodein.instance<EntityManager>()
         DatabaseMigrator(em).migrate()
+        super.start(stage)
+        val controller by kodein.instance<MainController>()
+        controller.start()
     }
 
     override fun stop() {
         log.debug { "Stop invoked, closing DB." }
+        val em by kodein.instance<EntityManager>()
         em.close()
+        val controller by kodein.instance<MainController>()
+        controller.unsubscribeAll()
+        val view by kodein.instance<MainView>()
+        view.unsubscribeAll()
         super.stop()
     }
 }

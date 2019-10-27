@@ -2,6 +2,7 @@
 
 package katsu.model
 
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -9,25 +10,25 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
 
-const val COL_LENGTH_LIL = 128
-// const val COL_LENGTH_MED = 512
+@Entity(name = TreatmentDbo.ENTITY_NAME)
+@Table(name = TreatmentDbo.TABLE_NAME)
+data class TreatmentDbo(
 
-@Entity(name = Client.ENTITY_NAME)
-@Table(name = Client.TABLE_NAME)
-data class Client(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     val id: Long,
 
-    @Column(name = "firstName", nullable = false, length = COL_LENGTH_LIL)
-    val firstName: String,
+    @Column(name = COL_DATE, nullable = false)
+    var date: LocalDateTime,
 
-    @Column(name = "note", nullable = false)
-    val note: String
+    @Column(name = "notes", nullable = false)
+    var notes: String
+
 ) {
     companion object {
-        const val ENTITY_NAME = "Client"
-        const val TABLE_NAME = "client"
+        const val ENTITY_NAME = "Treatment"
+        const val TABLE_NAME = "treatment"
+        const val COL_DATE = "date"
     }
 }

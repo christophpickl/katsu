@@ -1,64 +1,56 @@
 package katsu.ui
 
-import javafx.scene.Node
-import javafx.scene.Scene
-import javafx.scene.input.MouseButton
-import javafx.scene.layout.VBox
-import org.testfx.api.FxAssert
+import assertk.assertThat
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
+import javafx.scene.control.ListView
+import katsu.model.Client
+import katsu.ui.view.ViewIds
 import org.testfx.api.FxRobot
-import org.testfx.api.FxToolkit
-import org.testfx.matcher.control.LabeledMatchers
-import org.testfx.robot.Motion
 import org.testng.annotations.Test
-import tornadofx.action
-import tornadofx.add
-import tornadofx.button
-import tornadofx.label
-import java.util.function.Predicate
+import tornadofx.selectedItem
 
 // https://github.com/TestFX/TestFX
 // https://github.com/edvin/tornadofx/tree/master/src/test/kotlin/tornadofx/tests
-@Test(groups = ["uiTest"])
+@Test(groups = ["ui"])
 class UiTest {
-    fun `just a sample`() {
-        val stage = FxToolkit.registerPrimaryStage()
 
-        val root = FooPane()
-        FxToolkit.setupFixture {
-            stage.scene = Scene(root)
-            stage.show()
-        }
+    private val firstName = "f"
+    private val notes = "n"
 
-        FxAssert.verifyThat(root.label1, LabeledMatchers.hasText("hello"))
-        val robot = FxRobot()
-        robot.clickOn(Predicate<Node> { it.id == "foo" }, Motion.DIRECT, MouseButton.PRIMARY)
-        try {
-            FxAssert.verifyThat(root.label1, LabeledMatchers.hasText("griassi"))
-        } catch (e: AssertionError) {
-            robot.saveScreenshot(stage)
-            throw e
-        }
+    fun `When add client Then client is added and list size increased`() = withKatsuFx {
+        clickById(ViewIds.BUTTON_NEW_CLIENT)
+
+        val list = clientList()
+        assertThat(list.selectionModel.selectedIndex).isEqualTo(0)
+        assertThat(list.selectedItem?.toClient()).isEqualTo(Client(
+            id = 1,
+            firstName = "",
+            notes = ""
+        ))
+        assertThat(list.items).hasSize(1)
     }
 
-    fun `Start app and click button`() {
-        FxToolkit.registerPrimaryStage()
-        FxToolkit.setupApplication(KatsuFxApp::class.java)
-        val robot = FxRobot()
-        robot.clickOn(Predicate<Node> { it.id == "btnClickMe" }, Motion.DIRECT, MouseButton.PRIMARY)
-    }
-}
+    fun `Given added client When change data and save Then fields in list are updated`() = withKatsuFx {
+        val list = clientList()
+        clickById(ViewIds.BUTTON_NEW_CLIENT)
 
-class FooPane : VBox() {
-    val label1 = label(text = "hello")
-    init {
-        add(label1)
-        add(label(text = "katsu"))
-        add(button(text = "click me").apply {
-            id = "foo"
-            action {
-                label1.text = "griassi"
-                println("click me clicked")
-            }
-        })
+        clickById(ViewIds.TEXT_FIRSTNAME)
+        write(firstName)
+        clickById(ViewIds.TEXT_NOTES)
+        write(notes)
+        clickById(ViewIds.BUTTON_SAVE_CLIENT)
+
+        assertThat(list.items[0].toClient()).isEqualTo(Client(
+            id = 1,
+            firstName = firstName,
+            notes = notes
+        ))
+    }
+
+    private fun FxRobot.clientList() = lookup(byId(ViewIds.LIST_CLIENTS)).query<ListView<ClientUi>>()
+
+    private fun FxRobot.clickById(id: String) {
+        clickOn(byId(id))
     }
 }
