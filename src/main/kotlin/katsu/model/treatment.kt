@@ -2,6 +2,8 @@
 
 package katsu.model
 
+import katsu.datePattern
+import katsu.persistence.NO_ID
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -23,12 +25,46 @@ data class TreatmentDbo(
     var date: LocalDateTime,
 
     @Column(name = "notes", nullable = false)
-    var notes: String
+    var notes: HtmlString
 
 ) {
     companion object {
         const val ENTITY_NAME = "Treatment"
         const val TABLE_NAME = "treatment"
         const val COL_DATE = "date"
+
+        val PROTOTYPE = TreatmentDbo(
+            id = NO_ID,
+            date = LocalDateTime.now(),
+            notes = ""
+        )
     }
+
+    fun toTreatment() = Treatment(
+        id = id,
+        date = date,
+        notes = notes
+    )
+}
+
+data class Treatment(
+    val id: Long,
+    val date: LocalDateTime,
+    val notes: HtmlString
+) {
+    companion object {
+        fun dummy() = Treatment(
+            id = 1L,
+            date = LocalDateTime.now(),
+            notes = "dummy treat"
+        )
+    }
+
+    val dateFormatted: String = date.format(datePattern)
+
+    fun toTreatmentDbo() = TreatmentDbo(
+        id = id,
+        date = date,
+        notes = notes
+    )
 }

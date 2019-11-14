@@ -1,6 +1,7 @@
 package katsu.ui.view
 
 import com.sun.javafx.collections.ObservableListWrapper
+import javafx.beans.property.ReadOnlyBooleanWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Orientation
@@ -9,13 +10,16 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.web.HTMLEditor
 import katsu.model.Client
+import katsu.model.Treatment
 import katsu.ui.AddNewClientEvent
+import katsu.ui.AddTreatmentEvent
 import katsu.ui.ClientAddedEvent
 import katsu.ui.ClientDeletedEvent
 import katsu.ui.ClientUi
 import katsu.ui.ClientUpdatedEvent
 import katsu.ui.ClientsReloadedEvent
 import katsu.ui.DeleteClientEvent
+import katsu.ui.TreatmentAddedEvent
 import katsu.ui.UpdateClientEvent
 import katsu.ui.toClientUi
 import mu.KotlinLogging.logger
@@ -43,6 +47,7 @@ class MainView : View() {
     private val logg = logger {}
 
     private val clients = ObservableListWrapper<ClientUi>(mutableListOf())
+    private val treatments = ObservableListWrapper<Treatment>(mutableListOf())
     private val selectedClient = SimpleObjectProperty<ClientUi>()
     private val registrations = mutableListOf<FXEventRegistration>()
 
@@ -58,22 +63,35 @@ class MainView : View() {
         registrations += subscribe<ClientAddedEvent> { event ->
             clients += event.client.toClientUi()
             clientsList.selectWhere { it.id == event.client.id }
+            treatments.setAll(event.client.treatments)
         }
         registrations += subscribe<ClientUpdatedEvent> { event ->
             val clientIndex = clients.indexOfFirst { it.id == event.client.id }
             clients[clientIndex] = event.client.toClientUi()
+            treatments.setAll(event.client.treatments)
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
             clients.removeIf { it.id == event.clientId }
+            treatments.clear()
         }
         registrations += subscribe<ClientsReloadedEvent> { event ->
             clients.setAll(event.clients.map { it.toClientUi() })
+        }
+        registrations += subscribe<TreatmentAddedEvent> { event ->
+            val clientIndex = clients.indexOfFirst { it.id == event.client.id }
+            if (clientIndex == -1) {
+                println("not found: ${event.client} in clients: $clients")
+            }
+            clients[clientIndex] = event.client.toClientUi()
+            treatments.setAll(event.client.treatments)
+            event.treatment // FIXME use it to change treatment UI
         }
     }
 
     private fun updateFields(client: ClientUi?) {
         firstNameField.text = client?.firstName ?: ""
         notesField.htmlText = client?.notes ?: ""
+        treatments.setAll(client?.treatments ?: emptyList())
     }
 
     fun unsubscribeAll() {
@@ -94,11 +112,35 @@ class MainView : View() {
         }
         vbox {
             hgrow = Priority.ALWAYS
-            label("First Name")
-            firstNameField = textfield().apply {
-                hgrow = Priority.ALWAYS
-                id = ViewIds.TEXT_FIRSTNAME
+            hbox {
+                vgrow = Priority.ALWAYS
+                vbox {
+                    hgrow = Priority.ALWAYS
+                    label("First Name")
+                    firstNameField = textfield().apply {
+                        hgrow = Priority.ALWAYS
+                        id = ViewIds.TEXT_FIRSTNAME
+                    }
+                }
+                vbox {
+                    hgrow = Priority.NEVER
+                    listview(treatments) {
+                        cellFormat {
+                            text = it.dateFormatted
+                        }
+                    }
+                    button("Add") {
+                        action {
+                            fire(AddTreatmentEvent(selectedClient.get().toClient()))
+                        }
+                    }
+                    button("Delete") {
+                        enableWhen(ReadOnlyBooleanWrapper(false))
+                    }
+                }
             }
+
+
             label("Notes")
             notesField = htmleditor().apply {
                 id = ViewIds.TEXT_NOTES

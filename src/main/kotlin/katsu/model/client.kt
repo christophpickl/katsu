@@ -27,7 +27,7 @@ data class ClientDbo(
     var firstName: String,
 
     @Column(name = "notes", nullable = false)
-    var notes: String,
+    var notes: HtmlString,
 
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     var treatments: MutableList<TreatmentDbo> = mutableListOf()
@@ -41,7 +41,8 @@ data class ClientDbo(
     fun toClient() = Client(
         id = id,
         firstName = firstName,
-        notes = notes
+        notes = notes,
+        treatments = treatments.map { it.toTreatment() }
     )
 
     fun updateBy(client: Client) {
@@ -53,7 +54,8 @@ data class ClientDbo(
 data class Client(
     val id: Long,
     val firstName: String,
-    val notes: HtmlString
+    val notes: HtmlString,
+    val treatments: List<Treatment>
 ) {
     companion object {
         val PROTOTYPE = Client(
@@ -62,9 +64,10 @@ data class Client(
             notes = """
                 <html dir="ltr"><head></head><body contenteditable="true">
                 <h1><font face="Arial">Medical</font></h1>
-                ul><li><span style="font-family: Arial;">TODO</span></li></ul>
+                <ul><li><span style="font-family: Arial;">TODO</span></li></ul>
                 </body></html>
-            """.trimIndent()
+            """.trimIndent(),
+            treatments = emptyList()
         )
     }
 
@@ -72,6 +75,6 @@ data class Client(
         id = NO_ID,
         firstName = firstName,
         notes = notes,
-        treatments = mutableListOf()
+        treatments = treatments.map { it.toTreatmentDbo() }.toMutableList()
     )
 }
