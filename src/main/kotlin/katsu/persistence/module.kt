@@ -17,7 +17,7 @@ import javax.persistence.EntityManager
 private val log = logger {}
 
 val Katsu.Configuration.Directories.database
-    get() = File(applicationHome, "database")
+    get() = File(applicationHome, "database/db")
 
 private val dbCounter = AtomicInteger(1)
 

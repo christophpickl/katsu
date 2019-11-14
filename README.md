@@ -7,6 +7,7 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 # Roadmap
 
 # Phase 0
+* confirm dialog on delete
 * TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
 * FINISH: rechts liste mit behandlungen (nur 4 entries zeigen)
     * persistence done; needs UI and integration

@@ -13,6 +13,8 @@ import javax.persistence.Id
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
+typealias HtmlString = String
+
 @Entity(name = ClientDbo.ENTITY_NAME)
 @Table(name = ClientDbo.TABLE_NAME)
 data class ClientDbo(
@@ -51,14 +53,18 @@ data class ClientDbo(
 data class Client(
     val id: Long,
     val firstName: String,
-    /** HTML text */
-    val notes: String
+    val notes: HtmlString
 ) {
     companion object {
         val PROTOTYPE = Client(
             id = NO_ID,
             firstName = "",
-            notes = ""
+            notes = """
+                <html dir="ltr"><head></head><body contenteditable="true">
+                <h1><font face="Arial">Medical</font></h1>
+                ul><li><span style="font-family: Arial;">TODO</span></li></ul>
+                </body></html>
+            """.trimIndent()
         )
     }
 
