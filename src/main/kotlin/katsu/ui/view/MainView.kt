@@ -99,8 +99,10 @@ class MainView : View() {
         }
         registrations += subscribe<ClientUpdatedEvent> { event ->
             logg.trace { "onClientUpdatedEvent: $event" }
+            val selectedId = selectedTreatment.get().id
             clients.setById(event.client)
             treatments.setAll(event.client.treatments.map { it.toTreatmentUi() })
+            treatmentsList.selectWhere { it.id == selectedId }
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
             logg.trace { "onClientDeletedEvent: $event" }

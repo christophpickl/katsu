@@ -66,7 +66,8 @@ data class Client(
     val treatments: List<Treatment>
 ) {
     companion object {
-        val PROTOTYPE = Client(
+        val PROTOTYPE
+            get() = Client(
             id = NO_ID,
             firstName = "",
             notes = """

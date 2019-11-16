@@ -33,10 +33,11 @@ data class TreatmentDbo(
         const val TABLE_NAME = "treatment"
         const val COL_DATE = "date"
 
-        val PROTOTYPE = TreatmentDbo(
+        val PROTOTYPE
+            get() = TreatmentDbo(
             id = NO_ID,
             date = LocalDateTime.now(),
-            notes = ""
+                notes = "PROTOTYPE"
         )
     }
 
