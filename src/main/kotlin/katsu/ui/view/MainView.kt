@@ -9,7 +9,7 @@ import javafx.scene.control.ListView
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.web.HTMLEditor
-import katsu.datePattern
+import katsu.datePatternParse
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
 import katsu.ui.AddTreatmentEvent
@@ -19,9 +19,9 @@ import katsu.ui.ClientUi
 import katsu.ui.ClientUpdatedEvent
 import katsu.ui.ClientsReloadedEvent
 import katsu.ui.DeleteClientEvent
+import katsu.ui.SaveClientEvent
 import katsu.ui.TreatmentAddedEvent
 import katsu.ui.TreatmentUi
-import katsu.ui.UpdateClientEvent
 import katsu.ui.toClientUi
 import katsu.ui.toTreatmentUi
 import mu.KotlinLogging.logger
@@ -45,7 +45,6 @@ import tornadofx.textfield
 import tornadofx.top
 import tornadofx.vbox
 import tornadofx.vgrow
-import java.time.LocalDateTime
 
 class MainView : View() {
 
@@ -66,37 +65,50 @@ class MainView : View() {
     private var treatmentNotesField: HTMLEditor by singleAssign()
     private var dateField: TextField by singleAssign()
 
+    private fun storeTreatmentUiData() {
+        selectedTreatment.value?.let { currentTreatment ->
+            val inMemoryTreatment = treatments.first { it.id == currentTreatment.id }
+            inMemoryTreatment.dateProperty().set(datePatternParse(dateField.text))
+            inMemoryTreatment.notesProperty().set(treatmentNotesField.htmlText)
+            logg.trace { "stored inMemoryTreatment: $inMemoryTreatment" }
+        }
+    }
+
     init {
         title = "Katsu"
         selectedClient.addListener { _: ObservableValue<out ClientUi?>, _: ClientUi?, newValue: ClientUi? ->
+            logg.trace { "selected client changed: $newValue" }
             updateClientFields(newValue)
         }
-        selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, _: TreatmentUi?, newValue: TreatmentUi? ->
+        selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, oldValue: TreatmentUi?, newValue: TreatmentUi? ->
+            logg.trace { "selected treatment changed: $newValue" }
+//            oldValue?.let { storeTreatmentUiData(it) }
             updateTreatmentFields(newValue)
         }
         registrations += subscribe<ClientAddedEvent> { event ->
+            logg.trace { "onClientAddedEvent: $event" }
             clients += event.client.toClientUi()
             clientsList.selectWhere { it.id == event.client.id }
             treatments.setAll(event.client.treatments.map { it.toTreatmentUi() })
         }
         registrations += subscribe<ClientUpdatedEvent> { event ->
-            val clientIndex = clients.indexOfFirst { it.id == event.client.id }
-            clients[clientIndex] = event.client.toClientUi()
+            logg.trace { "onClientUpdatedEvent: $event" }
+            clients.setById(event.client)
             treatments.setAll(event.client.treatments.map { it.toTreatmentUi() })
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
+            logg.trace { "onClientDeletedEvent: $event" }
             clients.removeIf { it.id == event.clientId }
             treatments.clear()
         }
         registrations += subscribe<ClientsReloadedEvent> { event ->
+            logg.trace { "onClientsReloadedEvent: $event" }
             clients.setAll(event.clients.map { it.toClientUi() })
         }
         registrations += subscribe<TreatmentAddedEvent> { event ->
-            val clientIndex = clients.indexOfFirst { it.id == event.client.id }
-            clients[clientIndex] = event.client.toClientUi()
+            logg.trace { "onTreatmentAddedEvent: $event" }
             val treatmentUi = event.treatment.toTreatmentUi()
             treatments.add(treatmentUi)
-//            treatments.setAll(event.client.treatments)
             updateTreatmentFields(treatmentUi)
         }
     }
@@ -116,7 +128,7 @@ class MainView : View() {
     }
 
     private fun updateTreatmentFields(treatment: TreatmentUi?) {
-        dateField.text = treatment?.dateFormatted ?: LocalDateTime.now().format(datePattern)
+        dateField.text = treatment?.dateFormatted ?: ""
         treatmentNotesField.htmlText = treatment?.notes ?: ""
     }
 
@@ -133,8 +145,6 @@ class MainView : View() {
         }
         center {
             hbox {
-
-
                 vbox {
                     hbox(spacing = 5) {
                         button("New").apply {
@@ -149,8 +159,9 @@ class MainView : View() {
                             id = ViewIds.BUTTON_SAVE_CLIENT
                             enableWhenClientSelected()
                             action {
+                                storeTreatmentUiData()
                                 val currentClient = selectedClient.get().toClient().updateByView()
-                                fire(UpdateClientEvent(currentClient))
+                                fire(SaveClientEvent(currentClient))
                             }
                         }
                         button("Delete").apply {
@@ -199,6 +210,14 @@ class MainView : View() {
                             treatmentsList = listview(treatments) {
                                 vgrow = Priority.ALWAYS
                                 multiSelect(false)
+                                selectionModel.selectedItemProperty().addListener { _, old, _ ->
+                                    if (old != null) {
+                                        treatments.firstOrNull { it.id == old.id }?.let { storedUi ->
+                                            storedUi.dateProperty().set(datePatternParse(dateField.text))
+                                            storedUi.notesProperty().set(treatmentNotesField.htmlText)
+                                        }
+                                    }
+                                }
 
                                 bindSelected(selectedTreatment)
                                 cellFormat {
@@ -226,8 +245,6 @@ class MainView : View() {
                         hgrow = Priority.ALWAYS
                         vgrow = Priority.ALWAYS
                     }
-
-//            separator(Orientation.HORIZONTAL)
                 }
             }
         }
@@ -246,4 +263,10 @@ class MainView : View() {
     private fun Button.enableWhenClientSelected() {
         enableWhen { selectedClient.isNotNull }
     }
+}
+
+private fun ObservableListWrapper<ClientUi>.setById(client: Client) {
+    val clientIndex = indexOfFirst { it.id == client.id }
+    require(clientIndex != -1) { "given client's ID ($client) is not contained in stored IDs: ${map { it.id }.joinToString()}" }
+    this[clientIndex] = client.toClientUi()
 }

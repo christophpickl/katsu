@@ -2,10 +2,11 @@
 
 package katsu.ui
 
-import katsu.datePattern
+import katsu.formatKatsuDate
 import katsu.model.Client
 import katsu.model.HtmlString
 import katsu.model.Treatment
+import katsu.model.katsuSubstring
 import tornadofx.getProperty
 import tornadofx.property
 import java.time.LocalDateTime
@@ -25,7 +26,7 @@ class ClientUi(client: Client) {
 
     fun toClient() = Client(id = id, firstName = firstName, notes = notes, treatments = treatments)
 
-    override fun toString() = "ClientUi[id=$id, firstName=$firstName]"
+    override fun toString() = "ClientUi($id, $firstName, treatments=${treatments.size}, notes=${notes.katsuSubstring()})"
 }
 
 fun Client.toClientUi() = ClientUi(this)
@@ -36,7 +37,7 @@ class TreatmentUi(treatment: Treatment) {
 
     var date by property<LocalDateTime>(treatment.date)
     fun dateProperty() = getProperty(TreatmentUi::date)
-    val dateFormatted: String = date.format(datePattern)
+    val dateFormatted: String = date.formatKatsuDate()
 
     var notes by property<HtmlString>(treatment.notes)
     fun notesProperty() = getProperty(TreatmentUi::notes)
@@ -47,7 +48,7 @@ class TreatmentUi(treatment: Treatment) {
         notes = notes
     )
 
-    override fun toString() = "TreatmentUi[id=$id, date=$date]"
+    override fun toString() = "TreatmentUi($id, date=$date, notes=${notes.katsuSubstring()})"
 
 }
 

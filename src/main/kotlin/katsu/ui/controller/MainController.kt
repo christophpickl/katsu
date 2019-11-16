@@ -11,8 +11,8 @@ import katsu.ui.ClientDeletedEvent
 import katsu.ui.ClientUpdatedEvent
 import katsu.ui.ClientsReloadedEvent
 import katsu.ui.DeleteClientEvent
+import katsu.ui.SaveClientEvent
 import katsu.ui.TreatmentAddedEvent
-import katsu.ui.UpdateClientEvent
 import mu.KotlinLogging.logger
 import org.kodein.di.generic.instance
 import org.kodein.di.tornadofx.kodein
@@ -29,14 +29,14 @@ class MainController : Controller() {
         registrations += subscribe<AddNewClientEvent> {
             addNewClient()
         }
-        registrations += subscribe<UpdateClientEvent> {
-            updateClient(it.client)
+        registrations += subscribe<SaveClientEvent> {
+            saveClient(it.client)
         }
         registrations += subscribe<DeleteClientEvent> {
             deleteClient(it.clientId)
         }
         registrations += subscribe<AddTreatmentEvent> {
-            addNewTreatment(it.client)
+            addTreatment(it.client)
         }
     }
 
@@ -50,7 +50,7 @@ class MainController : Controller() {
         ))
     }
 
-    private fun addNewTreatment(client: Client) {
+    private fun addTreatment(client: Client) {
         logg.debug { "adding new treatment for ${client.firstName}" }
 
         val dboClient = repository.fetch(client.id)
@@ -65,9 +65,10 @@ class MainController : Controller() {
         fire(ClientAddedEvent(insertedClient))
     }
 
-    private fun updateClient(client: Client) {
+    private fun saveClient(client: Client) {
         require(client.id != NO_ID) { "Not able to update a not yet persisted client!" }
-        fire(ClientUpdatedEvent(insertOrUpdateClient(client)))
+        val savedClient = insertOrUpdateClient(client)
+        fire(ClientUpdatedEvent(savedClient))
     }
 
     private fun insertOrUpdateClient(client: Client): Client {

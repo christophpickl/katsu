@@ -9,8 +9,9 @@ object Logging {
 
     fun configure(environment: Environment) {
         Logback4k.reconfigure {
+            println("Reconfiguring log ...")
             rootLevel = Level.WARN
-            packageLevel(Level.DEBUG, "katsu")
+            packageLevel(Level.ALL, "katsu")
             when (environment) {
                 Environment.PROD -> {
                     val filePrefix = "${logsDirectory.canonicalPath}/katsu"

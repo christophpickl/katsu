@@ -48,7 +48,15 @@ data class ClientDbo(
     fun updateBy(client: Client) {
         firstName = client.firstName
         notes = client.notes
+        println("from DB: ${treatments}")
+        println("by given treats: ${client.treatments}")
+        treatments.forEach { treatment ->
+            val newTreatment = client.treatments.first { it.id == treatment.id }
+            treatment.updateBy(newTreatment)
+        }
     }
+
+    override fun toString() = "ClientDbo($id, $firstName, treatments=${treatments.size}, notes=${notes.katsuSubstring()})"
 }
 
 data class Client(
@@ -77,4 +85,11 @@ data class Client(
         notes = notes,
         treatments = treatments.map { it.toTreatmentDbo() }.toMutableList()
     )
+
+    override fun toString() = "Client($id, $firstName, treatments=${treatments.size}, notes=${notes.katsuSubstring()})"
+
 }
+
+fun String.katsuSubstring(): String =
+    if (length < 23) "'$this'"
+    else "'${substring(0, 19)} [...]'"

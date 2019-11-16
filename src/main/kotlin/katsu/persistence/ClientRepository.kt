@@ -1,6 +1,7 @@
 package katsu.persistence
 
 import katsu.model.ClientDbo
+import mu.KotlinLogging.logger
 import javax.persistence.EntityManager
 
 interface ClientRepository {
@@ -14,6 +15,8 @@ class ClientRepositoryImpl(
     private val em: EntityManager
 ) : ClientRepository {
 
+    private val log = logger {}
+
     override fun fetch(id: Long): ClientDbo =
         em.find(ClientDbo::class.java, id)?.also { client ->
             client.treatments.sortByDescending { it.date }
@@ -24,6 +27,9 @@ class ClientRepositoryImpl(
 
     override fun save(client: ClientDbo): ClientDbo {
         em.transactional {
+            log.debug { "save($client)" }
+            println("REPO: notes of treatments:")
+            println(client.treatments.map { it.notes })
             persist(client)
         }
         return client
@@ -32,6 +38,7 @@ class ClientRepositoryImpl(
     override fun delete(id: Long): ClientDbo {
         val client = fetch(id)
         em.transactional {
+            log.debug { "remove($client)" }
             remove(client)
         }
         return client

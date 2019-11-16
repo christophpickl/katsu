@@ -2,6 +2,7 @@
 
 package katsu.model
 
+import katsu.formatKatsuDate
 import katsu.persistence.NO_ID
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -39,11 +40,18 @@ data class TreatmentDbo(
         )
     }
 
+    fun updateBy(newTreatment: Treatment) {
+        date = newTreatment.date
+        notes = newTreatment.notes
+    }
+
     fun toTreatment() = Treatment(
         id = id,
         date = date,
         notes = notes
     )
+
+    override fun toString() = "TreatmentDbo($id, ${date.formatKatsuDate()}, notes=${notes.katsuSubstring()})"
 }
 
 data class Treatment(
@@ -64,4 +72,7 @@ data class Treatment(
         date = date,
         notes = notes
     )
+
+    override fun toString() = "Treatment($id, ${date.formatKatsuDate()}, notes=${notes.katsuSubstring()})"
+
 }

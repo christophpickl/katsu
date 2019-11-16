@@ -7,7 +7,7 @@ import tornadofx.FXEvent
 object AddNewClientEvent : FXEvent()
 class ClientAddedEvent(val client: Client) : FXEvent()
 
-class UpdateClientEvent(val client: Client) : FXEvent()
+class SaveClientEvent(val client: Client) : FXEvent()
 class ClientUpdatedEvent(val client: Client) : FXEvent()
 
 class DeleteClientEvent(val clientId: Long) : FXEvent()
