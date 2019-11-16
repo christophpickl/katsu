@@ -72,7 +72,7 @@ data class Client(
     }
 
     fun toClientDbo() = ClientDbo(
-        id = NO_ID,
+        id = id,
         firstName = firstName,
         notes = notes,
         treatments = treatments.map { it.toTreatmentDbo() }.toMutableList()

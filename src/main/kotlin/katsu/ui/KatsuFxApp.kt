@@ -1,24 +1,15 @@
 package katsu.ui
 
 import javafx.stage.Stage
-import katsu.KoinModules
+import katsu.appKodein
 import katsu.persistence.DatabaseMigrator
-import katsu.persistence.persistenceModule
 import katsu.ui.controller.MainController
 import katsu.ui.view.MainView
 import mu.KotlinLogging.logger
-import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
-import org.kodein.di.tornadofx.installTornadoSource
 import tornadofx.App
 import javax.persistence.EntityManager
-
-fun appKodein() = Kodein {
-    import(KoinModules.uiModule)
-    import(KoinModules.persistenceModule)
-    installTornadoSource()
-}
 
 class KatsuFxApp : App(
     primaryView = MainView::class,

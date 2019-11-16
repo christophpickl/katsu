@@ -2,10 +2,13 @@
 
 package katsu.ui
 
+import katsu.datePattern
 import katsu.model.Client
+import katsu.model.HtmlString
 import katsu.model.Treatment
 import tornadofx.getProperty
 import tornadofx.property
+import java.time.LocalDateTime
 
 class ClientUi(client: Client) {
     var id by property<Long>(client.id)
@@ -26,3 +29,27 @@ class ClientUi(client: Client) {
 }
 
 fun Client.toClientUi() = ClientUi(this)
+
+class TreatmentUi(treatment: Treatment) {
+    var id by property<Long>(treatment.id)
+    fun idProperty() = getProperty(TreatmentUi::id)
+
+    var date by property<LocalDateTime>(treatment.date)
+    fun dateProperty() = getProperty(TreatmentUi::date)
+    val dateFormatted: String = date.format(datePattern)
+
+    var notes by property<HtmlString>(treatment.notes)
+    fun notesProperty() = getProperty(TreatmentUi::notes)
+
+    fun toTreatment() = Treatment(
+        id = id,
+        date = date,
+        notes = notes
+    )
+
+    override fun toString() = "TreatmentUi[id=$id, date=$date]"
+
+}
+
+fun Treatment.toTreatmentUi() = TreatmentUi(this)
+

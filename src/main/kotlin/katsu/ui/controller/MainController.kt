@@ -21,9 +21,8 @@ import tornadofx.FXEventRegistration
 
 class MainController : Controller() {
 
-    private val registrations = mutableListOf<FXEventRegistration>()
-
     private val logg = logger {}
+    private val registrations = mutableListOf<FXEventRegistration>()
     private val repository: ClientRepository by kodein().instance()
 
     init {
@@ -39,19 +38,16 @@ class MainController : Controller() {
         registrations += subscribe<AddTreatmentEvent> {
             addNewTreatment(it.client)
         }
-
     }
-
-    fun start() {
-        fire(ClientsReloadedEvent(fetchAllClients()))
-    }
-
-    private fun fetchAllClients() = repository.fetchAll().map { it.toClient() }
-
-    fun fetch(id: Long): Client = repository.fetch(id).toClient()
 
     fun unsubscribeAll() {
         registrations.forEach { it.unsubscribe() }
+    }
+
+    fun start() {
+        fire(ClientsReloadedEvent(
+            clients = repository.fetchAll().map { it.toClient() }
+        ))
     }
 
     private fun addNewTreatment(client: Client) {

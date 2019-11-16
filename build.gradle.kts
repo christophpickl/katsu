@@ -51,6 +51,7 @@ dependencies {
     compile("io.github.microutils:kotlin-logging:1.7.6")
     compile("org.kodein.di:kodein-di-generic-jvm:6.3.3")
     compile("org.kodein.di:kodein-di-framework-tornadofx-jvm:6.3.3")
+    compile("de.codecentric.centerdevice:centerdevice-nsmenufx:2.1.6")
 
     // PERSISTENCE
     compile("com.h2database:h2:1.4.199")

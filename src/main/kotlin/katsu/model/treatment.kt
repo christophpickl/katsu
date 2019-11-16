@@ -2,7 +2,6 @@
 
 package katsu.model
 
-import katsu.datePattern
 import katsu.persistence.NO_ID
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -59,8 +58,6 @@ data class Treatment(
             notes = "dummy treat"
         )
     }
-
-    val dateFormatted: String = date.format(datePattern)
 
     fun toTreatmentDbo() = TreatmentDbo(
         id = id,
