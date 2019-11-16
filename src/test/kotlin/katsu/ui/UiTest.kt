@@ -19,7 +19,7 @@ class UiTest {
     private val notes = "n"
 
     fun `When add client Then client is added and list size increased`() = withKatsuFx {
-        clickById(ViewIds.BUTTON_NEW_CLIENT)
+        clickById(ViewIds.BUTTON_ADD_CLIENT)
 
         val list = clientList()
         assertThat(list.selectionModel.selectedIndex).isEqualTo(0)
@@ -33,7 +33,7 @@ class UiTest {
 
     fun `Given added client When change data and save Then fields in list are updated`() = withKatsuFx {
         val list = clientList()
-        clickById(ViewIds.BUTTON_NEW_CLIENT)
+        clickById(ViewIds.BUTTON_ADD_CLIENT)
 
         clickById(ViewIds.TEXT_FIRSTNAME)
         write(firstName)

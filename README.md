@@ -6,21 +6,28 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 
 # Roadmap
 
-# Phase 0
-* on delete: context menu + confirm dialog
-* autosave (on client change, on exit)
+## Phase 0
+* @client list: automatische sortierung (rendered label case-insensitive) 
+* @client list: 1) treatments.size 2) lastTreatment:Ago
+* client picture: jpg+png, auto resize/crop
 
-# Phase 1
-* client picture: jpg+png, auto resize, auto crop
-* moooar fields (client ABC type, donation type, birthday, names, gender) 
+## Phase 1
+* autosave (on client change, on exit)
+* treatment navigation buttons <<, >>
+* more client fields: ABC type, donation type, birthday, names, gender, email
+* more treatment fields: ?
+* disable clients
+* etwas kompakterer HTML editor
+
+## Later
 * TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
 
-# Phase 2
+## Post 1
 * client treatment cooldown
 * treatment counter indicator
 * mail integration (templates; rich format html? own freeshiatsu address?) 
 
-# Phase 3
+## Post 2
 * calendar integration
 * doodle integration
 * manage invitations (store mail + mail type), manage response

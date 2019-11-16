@@ -10,12 +10,12 @@ import javafx.scene.layout.Priority
 import javafx.scene.web.HTMLEditor
 import katsu.formatKatsuDate
 import katsu.model.Client
-import katsu.ui.AddNewClientEvent
+import katsu.ui.AddClientEvent
 import katsu.ui.AddTreatmentEvent
 import katsu.ui.ClientAddedEvent
 import katsu.ui.ClientDeletedEvent
+import katsu.ui.ClientSavedEvent
 import katsu.ui.ClientUi
-import katsu.ui.ClientUpdatedEvent
 import katsu.ui.ClientsReloadedEvent
 import katsu.ui.DeleteClientEvent
 import katsu.ui.SaveClientEvent
@@ -52,18 +52,15 @@ class MainView : View() {
 
     private val logg = logger {}
     private val menuBarController: MenuBarController by inject()
-
     private val clients = ObservableListWrapper<ClientUi>(mutableListOf())
     private val treatments = ObservableListWrapper<TreatmentUi>(mutableListOf())
     private val selectedTreatment = SimpleObjectProperty<TreatmentUi>()
     private val selectedClient = SimpleObjectProperty<ClientUi>()
     private val registrations = mutableListOf<FXEventRegistration>()
-
     private var clientsList: ListView<ClientUi> by singleAssign()
     private var firstNameField: TextField by singleAssign()
     private var notesField: HTMLEditor by singleAssign()
     private var treatmentsList: ListView<TreatmentUi> by singleAssign()
-
     private val treatmentView = TreatmentView()
 
     private fun storeTreatmentUiData() {
@@ -97,12 +94,14 @@ class MainView : View() {
             clientsList.selectWhere { it.id == event.client.id }
             treatments.setAll(event.client.treatments.map { it.toTreatmentUi() })
         }
-        registrations += subscribe<ClientUpdatedEvent> { event ->
+        registrations += subscribe<ClientSavedEvent> { event ->
             logg.trace { "onClientUpdatedEvent: $event" }
-            val selectedId = selectedTreatment.get().id
             clients.setById(event.client)
+            val previousSelected = selectedTreatment.get()?.id
             treatments.setAll(event.client.treatments.map { it.toTreatmentUi() })
-            treatmentsList.selectWhere { it.id == selectedId }
+            if (previousSelected != null) {
+                treatmentsList.selectWhere { it.id == previousSelected }
+            }
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
             logg.trace { "onClientDeletedEvent: $event" }
@@ -150,11 +149,11 @@ class MainView : View() {
             hbox {
                 vbox {
                     hbox(spacing = 5) {
-                        button("New").apply {
-                            id = ViewIds.BUTTON_NEW_CLIENT
+                        button("Add").apply {
+                            id = ViewIds.BUTTON_ADD_CLIENT
                             action {
-                                logg.debug { "Add new client button clicked" }
-                                fire(AddNewClientEvent)
+                                logg.debug { "Add client button clicked" }
+                                fire(AddClientEvent)
                                 firstNameField.requestFocus()
                             }
                         }
@@ -167,13 +166,6 @@ class MainView : View() {
                                 fire(SaveClientEvent(currentClient))
                             }
                         }
-                        button("Delete").apply {
-                            id = ViewIds.BUTTON_DELETE_CLIENT
-                            enableWhenClientSelected()
-                            action {
-                                fire(DeleteClientEvent(selectedClient.get().id))
-                            }
-                        }
                     }
                     clientsList = listview(clients) {
                         vgrow = Priority.ALWAYS
@@ -183,20 +175,19 @@ class MainView : View() {
                         cellFormat {
                             text = it.firstName
                         }
+                        contextmenu {
+                            item(name = "Delete") {
+                                setOnAction {
+                                    fire(DeleteClientEvent(selectedClient.get().id))
+                                }
+                            }
+                        }
                     }
                 }
                 vbox {
                     hgrow = Priority.ALWAYS
                     hbox {
                         vgrow = Priority.ALWAYS
-                        vbox {
-                            hgrow = Priority.ALWAYS
-                            label("First Name")
-                            firstNameField = textfield().apply {
-                                hgrow = Priority.ALWAYS
-                                id = ViewIds.TEXT_FIRSTNAME
-                            }
-                        }
                         vbox {
                             hgrow = Priority.NEVER
                             button("Add") {
@@ -215,14 +206,20 @@ class MainView : View() {
                                 }
                                 contextmenu {
                                     item(name = "Delete") {
-                                        enableWhen(selectedTreatment.isNotNull)
                                         setOnAction {
-                                            // not firing an event ;)
                                             val treatmentToDelete = selectedTreatment.get() // not properly beneath click point :)
                                             treatments.removeAll { it.id == treatmentToDelete.id }
                                         }
                                     }
                                 }
+                            }
+                        }
+                        vbox {
+                            hgrow = Priority.ALWAYS
+                            label("First Name")
+                            firstNameField = textfield().apply {
+                                hgrow = Priority.ALWAYS
+                                id = ViewIds.TEXT_FIRSTNAME
                             }
                         }
                     }
@@ -259,60 +256,3 @@ private fun ObservableListWrapper<ClientUi>.setById(client: Client) {
     require(clientIndex != -1) { "given client's ID ($client) is not contained in stored IDs: ${map { it.id }.joinToString()}" }
     this[clientIndex] = client.toClientUi()
 }
-
-/*
-
-                                setCellFactory {
-                                    val cell = ListCell<TreatmentUi>()
-
-                                    val contextMenu = ContextMenu().apply {
-                                        val deleteItem = MenuItem().apply {
-                                            text = "Delete"
-                                            action {
-                                                val clickedTreatument: TreatmentUi? = cell.item
-                                                println("context menuuu delete: ${clickedTreatument}")
-                                            }
-                                        }
-                                        items.addAll(deleteItem)
-                                    }
-
-                                    cell.textProperty().bind(cell.itemProperty().stringBinding(op = { it?.date?.formatKatsuDate() }))
-//                                    cell.textProperty().bindBidirectional(cell.itemProperty().get().dateProperty(), object : StringConverter<LocalDateTime>() {
-//                                        override fun toString(date: LocalDateTime?): String =  date?.formatKatsuDate() ?: ""
-//                                        override fun fromString(string: String?): LocalDateTime = datePatternParse(string!!)
-//                                    })
-
-                                    cell.emptyProperty().addListener { _, _, isNowEmpty ->
-                                        cell.contextMenu =
-                                            if (isNowEmpty) null
-                                            else contextMenu
-                                    }
-
-//                                    cell.itemProperty().
-//                                    cell.textProperty().bindBidirectional(cell.item.dateProperty(), LocalDateTimeStringConverter())//.bind(cell.item.dateFormatted)
-                                    /*
-
-            MenuItem editItem = new MenuItem();
-            editItem.textProperty().bind(Bindings.format("Edit \"%s\"", cell.itemProperty()));
-            editItem.setOnAction(event -> {
-                String item = cell.getItem();
-                // code to edit item...
-            });
-            MenuItem deleteItem = new MenuItem();
-            deleteItem.textProperty().bind(Bindings.format("Delete \"%s\"", cell.itemProperty()));
-            deleteItem.setOnAction(event -> listView.getItems().remove(cell.getItem()));
-            contextMenu.getItems().addAll(editItem, deleteItem);
-
-            cell.textProperty().bind(cell.itemProperty());
-
-            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-                if (isNowEmpty) {
-                    cell.setContextMenu(null);
-                } else {
-                    cell.setContextMenu(contextMenu);
-                }
-            });
-                                     */
-                                    cell
-                                }
- */

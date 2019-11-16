@@ -4,11 +4,11 @@ import katsu.model.Client
 import katsu.model.TreatmentDbo
 import katsu.persistence.ClientRepository
 import katsu.persistence.NO_ID
-import katsu.ui.AddNewClientEvent
+import katsu.ui.AddClientEvent
 import katsu.ui.AddTreatmentEvent
 import katsu.ui.ClientAddedEvent
 import katsu.ui.ClientDeletedEvent
-import katsu.ui.ClientUpdatedEvent
+import katsu.ui.ClientSavedEvent
 import katsu.ui.ClientsReloadedEvent
 import katsu.ui.DeleteClientEvent
 import katsu.ui.SaveClientEvent
@@ -26,7 +26,7 @@ class MainController : Controller() {
     private val repository: ClientRepository by kodein().instance()
 
     init {
-        registrations += subscribe<AddNewClientEvent> {
+        registrations += subscribe<AddClientEvent> {
             addNewClient()
         }
         registrations += subscribe<SaveClientEvent> {
@@ -68,7 +68,7 @@ class MainController : Controller() {
     private fun saveClient(client: Client) {
         require(client.id != NO_ID) { "Not able to update a not yet persisted client!" }
         val savedClient = insertOrUpdateClient(client)
-        fire(ClientUpdatedEvent(savedClient))
+        fire(ClientSavedEvent(savedClient))
     }
 
     private fun insertOrUpdateClient(client: Client): Client {

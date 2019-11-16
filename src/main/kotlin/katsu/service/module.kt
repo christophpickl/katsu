@@ -11,5 +11,5 @@ import org.kodein.di.generic.singleton
 @Suppress("unused")
 val KoinModules.serviceModule
     get() = Kodein.Module("Service Module") {
-        bind() from singleton { DevelopmentFeatureService(instance(), instance()) }
+        bind() from singleton { DevelopmentFeatureService(instance()) }
     }
