@@ -21,7 +21,8 @@ object Logging {
                 }
                 Environment.DEV, Environment.UI_TEST -> {
                     addConsoleAppender {
-                        pattern = "%d{HH:mm:ss.SSS} [%-5level] [%-28thread] %logger{60} - %msg%n"
+                        val foo = "#%M\\(:%line\\)"
+                        pattern = "%d{HH:mm:ss.SSS} [%-5level] [%-28thread] %logger{60}$foo - %msg%n"
                     }
                 }
             }.hashCode() // enforce branch

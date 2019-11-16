@@ -1,7 +1,6 @@
 package katsu.ui.view
 
 import com.sun.javafx.collections.ObservableListWrapper
-import javafx.beans.property.ReadOnlyBooleanWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.Button
@@ -10,6 +9,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.web.HTMLEditor
 import katsu.datePatternParse
+import katsu.formatKatsuDate
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
 import katsu.ui.AddTreatmentEvent
@@ -32,15 +32,18 @@ import tornadofx.bindSelected
 import tornadofx.borderpane
 import tornadofx.button
 import tornadofx.center
+import tornadofx.contextmenu
 import tornadofx.enableWhen
 import tornadofx.hbox
 import tornadofx.hgrow
 import tornadofx.htmleditor
+import tornadofx.item
 import tornadofx.label
 import tornadofx.listview
 import tornadofx.multiSelect
 import tornadofx.selectWhere
 import tornadofx.singleAssign
+import tornadofx.stringBinding
 import tornadofx.textfield
 import tornadofx.top
 import tornadofx.vbox
@@ -80,9 +83,18 @@ class MainView : View() {
             logg.trace { "selected client changed: $newValue" }
             updateClientFields(newValue)
         }
-        selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, oldValue: TreatmentUi?, newValue: TreatmentUi? ->
+        selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, old: TreatmentUi?, newValue: TreatmentUi? ->
             logg.trace { "selected treatment changed: $newValue" }
 //            oldValue?.let { storeTreatmentUiData(it) }
+            if (old != null) {
+                treatments.firstOrNull { it.id == old.id }?.let { storedTreatment ->
+                    println("stored: $storedTreatment => dateField: '${dateField.text}'")
+
+                    storedTreatment.dateProperty().set(datePatternParse(dateField.text))
+                    storedTreatment.notesProperty().set(treatmentNotesField.htmlText)
+                }
+            }
+
             updateTreatmentFields(newValue)
         }
         registrations += subscribe<ClientAddedEvent> { event ->
@@ -98,7 +110,7 @@ class MainView : View() {
         }
         registrations += subscribe<ClientDeletedEvent> { event ->
             logg.trace { "onClientDeletedEvent: $event" }
-            clients.removeIf { it.id == event.clientId }
+            clients.removeAll { it.id == event.clientId }
             treatments.clear()
         }
         registrations += subscribe<ClientsReloadedEvent> { event ->
@@ -108,11 +120,11 @@ class MainView : View() {
         registrations += subscribe<TreatmentAddedEvent> { event ->
             logg.trace { "onTreatmentAddedEvent: $event" }
             val treatmentUi = event.treatment.toTreatmentUi()
-            treatments.add(treatmentUi)
-            updateTreatmentFields(treatmentUi)
+            val index = treatments.indexOfFirst { it.date > treatmentUi.date }.let { if (it == -1) 0 else it }
+            treatments.add(index, treatmentUi)
+            treatmentsList.selectWhere { it.id == treatmentUi.id }
         }
     }
-
 
     private fun updateClientFields(client: ClientUi?) {
         firstNameField.text = client?.firstName ?: ""
@@ -128,7 +140,7 @@ class MainView : View() {
     }
 
     private fun updateTreatmentFields(treatment: TreatmentUi?) {
-        dateField.text = treatment?.dateFormatted ?: ""
+        dateField.text = treatment?.date?.formatKatsuDate() ?: ""
         treatmentNotesField.htmlText = treatment?.notes ?: ""
     }
 
@@ -196,32 +208,29 @@ class MainView : View() {
                         }
                         vbox {
                             hgrow = Priority.NEVER
-                            hbox(spacing = 5) {
-                                button("Add") {
-                                    enableWhenClientSelected()
-                                    action {
-                                        fire(AddTreatmentEvent(selectedClient.get().toClient()))
-                                    }
-                                }
-                                button("Delete") {
-                                    enableWhen(ReadOnlyBooleanWrapper(false))
+                            button("Add") {
+                                maxWidth = Double.MAX_VALUE
+                                enableWhenClientSelected()
+                                action {
+                                    fire(AddTreatmentEvent(selectedClient.get().toClient()))
                                 }
                             }
                             treatmentsList = listview(treatments) {
                                 vgrow = Priority.ALWAYS
                                 multiSelect(false)
-                                selectionModel.selectedItemProperty().addListener { _, old, _ ->
-                                    if (old != null) {
-                                        treatments.firstOrNull { it.id == old.id }?.let { storedUi ->
-                                            storedUi.dateProperty().set(datePatternParse(dateField.text))
-                                            storedUi.notesProperty().set(treatmentNotesField.htmlText)
-                                        }
-                                    }
-                                }
-
                                 bindSelected(selectedTreatment)
                                 cellFormat {
-                                    text = it.dateFormatted
+                                    textProperty().bind(it.dateProperty().stringBinding() { it?.formatKatsuDate() })
+                                }
+                                contextmenu {
+                                    item(name = "Delete") {
+                                        enableWhen(selectedTreatment.isNotNull)
+                                        setOnAction {
+                                            // not firing an event ;)
+                                            val treatmentToDelete = selectedTreatment.get() // not properly beneath click point :)
+                                            treatments.removeAll { it.id == treatmentToDelete.id }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -270,3 +279,60 @@ private fun ObservableListWrapper<ClientUi>.setById(client: Client) {
     require(clientIndex != -1) { "given client's ID ($client) is not contained in stored IDs: ${map { it.id }.joinToString()}" }
     this[clientIndex] = client.toClientUi()
 }
+
+/*
+
+                                setCellFactory {
+                                    val cell = ListCell<TreatmentUi>()
+
+                                    val contextMenu = ContextMenu().apply {
+                                        val deleteItem = MenuItem().apply {
+                                            text = "Delete"
+                                            action {
+                                                val clickedTreatument: TreatmentUi? = cell.item
+                                                println("context menuuu delete: ${clickedTreatument}")
+                                            }
+                                        }
+                                        items.addAll(deleteItem)
+                                    }
+
+                                    cell.textProperty().bind(cell.itemProperty().stringBinding(op = { it?.date?.formatKatsuDate() }))
+//                                    cell.textProperty().bindBidirectional(cell.itemProperty().get().dateProperty(), object : StringConverter<LocalDateTime>() {
+//                                        override fun toString(date: LocalDateTime?): String =  date?.formatKatsuDate() ?: ""
+//                                        override fun fromString(string: String?): LocalDateTime = datePatternParse(string!!)
+//                                    })
+
+                                    cell.emptyProperty().addListener { _, _, isNowEmpty ->
+                                        cell.contextMenu =
+                                            if (isNowEmpty) null
+                                            else contextMenu
+                                    }
+
+//                                    cell.itemProperty().
+//                                    cell.textProperty().bindBidirectional(cell.item.dateProperty(), LocalDateTimeStringConverter())//.bind(cell.item.dateFormatted)
+                                    /*
+
+            MenuItem editItem = new MenuItem();
+            editItem.textProperty().bind(Bindings.format("Edit \"%s\"", cell.itemProperty()));
+            editItem.setOnAction(event -> {
+                String item = cell.getItem();
+                // code to edit item...
+            });
+            MenuItem deleteItem = new MenuItem();
+            deleteItem.textProperty().bind(Bindings.format("Delete \"%s\"", cell.itemProperty()));
+            deleteItem.setOnAction(event -> listView.getItems().remove(cell.getItem()));
+            contextMenu.getItems().addAll(editItem, deleteItem);
+
+            cell.textProperty().bind(cell.itemProperty());
+
+            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    cell.setContextMenu(null);
+                } else {
+                    cell.setContextMenu(contextMenu);
+                }
+            });
+                                     */
+                                    cell
+                                }
+ */

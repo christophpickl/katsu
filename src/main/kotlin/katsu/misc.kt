@@ -4,7 +4,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-val datePattern: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+val datePatternAsString = "dd-MM-yyyy"
+val datePattern: DateTimeFormatter = DateTimeFormatter.ofPattern(datePatternAsString)
 
 fun datePatternParse(text: String): LocalDateTime {
     val date = LocalDate.parse(text, datePattern)
@@ -16,3 +17,5 @@ fun datePatternParse(text: String): LocalDateTime {
 }
 
 fun LocalDateTime.formatKatsuDate(): String = format(datePattern)
+
+fun LocalDateTime.withZeroTime(): LocalDateTime = withHour(0).withMinute(0).withSecond(0).withNano(0)

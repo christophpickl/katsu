@@ -5,15 +5,15 @@ import katsu.model.Treatment
 import tornadofx.FXEvent
 
 object AddNewClientEvent : FXEvent()
-class ClientAddedEvent(val client: Client) : FXEvent()
+data class ClientAddedEvent(val client: Client) : FXEvent()
 
-class SaveClientEvent(val client: Client) : FXEvent()
-class ClientUpdatedEvent(val client: Client) : FXEvent()
+data class SaveClientEvent(val client: Client) : FXEvent()
+data class ClientUpdatedEvent(val client: Client) : FXEvent()
 
-class DeleteClientEvent(val clientId: Long) : FXEvent()
-class ClientDeletedEvent(val clientId: Long) : FXEvent()
+data class DeleteClientEvent(val clientId: Long) : FXEvent()
+data class ClientDeletedEvent(val clientId: Long) : FXEvent()
 
-class ClientsReloadedEvent(val clients: List<Client>) : FXEvent()
+data class ClientsReloadedEvent(val clients: List<Client>) : FXEvent()
 
-class AddTreatmentEvent(val client: Client) : FXEvent()
-class TreatmentAddedEvent(val client: Client, val treatment: Treatment) : FXEvent()
+data class AddTreatmentEvent(val client: Client) : FXEvent()
+data class TreatmentAddedEvent(val client: Client, val treatment: Treatment) : FXEvent()

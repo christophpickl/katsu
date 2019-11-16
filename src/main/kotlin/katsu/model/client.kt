@@ -48,8 +48,8 @@ data class ClientDbo(
     fun updateBy(client: Client) {
         firstName = client.firstName
         notes = client.notes
-        println("from DB: ${treatments}")
-        println("by given treats: ${client.treatments}")
+        val toBeRemoved = treatments.map { it.id }.minus(client.treatments.map { it.id })
+        treatments.removeAll { toBeRemoved.contains(it.id) }
         treatments.forEach { treatment ->
             val newTreatment = client.treatments.first { it.id == treatment.id }
             treatment.updateBy(newTreatment)

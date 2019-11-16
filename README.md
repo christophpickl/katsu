@@ -7,20 +7,17 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 # Roadmap
 
 # Phase 0
-* confirm dialog on delete
-* TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
-* FINISH: rechts liste mit behandlungen (nur 4 entries zeigen)
-* ... wo drunter noch ein einziges grosses textfeld angezeigt wird (selber screen!)
-// prefs hardcoded in kotlin
+* on delete: context menu + confirm dialog
+* autosave (on client change, on exit)
 
 # Phase 1
 * client picture: jpg+png, auto resize, auto crop
-* moooar fields (client ABC type, donation type, birthday, names, gender, text sections) 
-* treatment list (single textfield, date)
+* moooar fields (client ABC type, donation type, birthday, names, gender) 
+* TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
 
 # Phase 2
-* client treatment cooldown, treatment counter indicator
-* autosave (on client change, on exit)
+* client treatment cooldown
+* treatment counter indicator
 * mail integration (templates; rich format html? own freeshiatsu address?) 
 
 # Phase 3

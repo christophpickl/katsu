@@ -2,7 +2,6 @@
 
 package katsu.ui
 
-import katsu.formatKatsuDate
 import katsu.model.Client
 import katsu.model.HtmlString
 import katsu.model.Treatment
@@ -37,7 +36,6 @@ class TreatmentUi(treatment: Treatment) {
 
     var date by property<LocalDateTime>(treatment.date)
     fun dateProperty() = getProperty(TreatmentUi::date)
-    val dateFormatted: String = date.formatKatsuDate()
 
     var notes by property<HtmlString>(treatment.notes)
     fun notesProperty() = getProperty(TreatmentUi::notes)

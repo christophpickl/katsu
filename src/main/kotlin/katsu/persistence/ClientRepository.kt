@@ -28,8 +28,6 @@ class ClientRepositoryImpl(
     override fun save(client: ClientDbo): ClientDbo {
         em.transactional {
             log.debug { "save($client)" }
-            println("REPO: notes of treatments:")
-            println(client.treatments.map { it.notes })
             persist(client)
         }
         return client
