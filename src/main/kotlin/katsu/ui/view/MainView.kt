@@ -8,7 +8,6 @@ import javafx.scene.control.ListView
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.web.HTMLEditor
-import katsu.datePatternParse
 import katsu.formatKatsuDate
 import katsu.model.Client
 import katsu.ui.AddNewClientEvent
@@ -65,14 +64,13 @@ class MainView : View() {
     private var notesField: HTMLEditor by singleAssign()
     private var treatmentsList: ListView<TreatmentUi> by singleAssign()
 
-    private var treatmentNotesField: HTMLEditor by singleAssign()
-    private var dateField: TextField by singleAssign()
+    private val treatmentView = TreatmentView()
 
     private fun storeTreatmentUiData() {
         selectedTreatment.value?.let { currentTreatment ->
             val inMemoryTreatment = treatments.first { it.id == currentTreatment.id }
-            inMemoryTreatment.dateProperty().set(datePatternParse(dateField.text))
-            inMemoryTreatment.notesProperty().set(treatmentNotesField.htmlText)
+            inMemoryTreatment.dateProperty().set(treatmentView.date)
+            inMemoryTreatment.notesProperty().set(treatmentView.notes)
             logg.trace { "stored inMemoryTreatment: $inMemoryTreatment" }
         }
     }
@@ -85,17 +83,13 @@ class MainView : View() {
         }
         selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, old: TreatmentUi?, newValue: TreatmentUi? ->
             logg.trace { "selected treatment changed: $newValue" }
-//            oldValue?.let { storeTreatmentUiData(it) }
             if (old != null) {
                 treatments.firstOrNull { it.id == old.id }?.let { storedTreatment ->
-                    println("stored: $storedTreatment => dateField: '${dateField.text}'")
-
-                    storedTreatment.dateProperty().set(datePatternParse(dateField.text))
-                    storedTreatment.notesProperty().set(treatmentNotesField.htmlText)
+                    storedTreatment.dateProperty().set(treatmentView.date)
+                    storedTreatment.notesProperty().set(treatmentView.notes)
                 }
             }
-
-            updateTreatmentFields(newValue)
+            treatmentView.updateTreatmentFields(newValue)
         }
         registrations += subscribe<ClientAddedEvent> { event ->
             logg.trace { "onClientAddedEvent: $event" }
@@ -136,12 +130,7 @@ class MainView : View() {
         if (preselectedTreatment != null) {
             treatmentsList.selectWhere { it.id == preselectedTreatment.id }
         }
-        updateTreatmentFields(preselectedTreatment)
-    }
-
-    private fun updateTreatmentFields(treatment: TreatmentUi?) {
-        dateField.text = treatment?.date?.formatKatsuDate() ?: ""
-        treatmentNotesField.htmlText = treatment?.notes ?: ""
+        treatmentView.updateTreatmentFields(preselectedTreatment)
     }
 
     override val root = borderpane {
@@ -242,18 +231,7 @@ class MainView : View() {
                         vgrow = Priority.ALWAYS
                     }
 
-                    label("TREATMENT ===")
-                    vbox {
-                        hgrow = Priority.ALWAYS
-                        label("Date")
-                        dateField = textfield().apply {
-                            hgrow = Priority.ALWAYS
-                        }
-                    }
-                    treatmentNotesField = htmleditor().apply {
-                        hgrow = Priority.ALWAYS
-                        vgrow = Priority.ALWAYS
-                    }
+                    add(treatmentView)
                 }
             }
         }
