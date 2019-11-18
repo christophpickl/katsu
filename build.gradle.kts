@@ -10,7 +10,6 @@ version = 1.0
 val myMainClassName = "katsu.Katsu"
 val myAppName = "Katsu"
 val minimumLineCoverage = 0.5
-val isRunningOnTravis = File("/home/travis").exists()
 
 repositories {
     jcenter()
@@ -54,10 +53,6 @@ dependencies {
     compile("org.kodein.di:kodein-di-generic-jvm:6.3.3")
     compile("org.kodein.di:kodein-di-framework-tornadofx-jvm:6.3.3")
     compile("de.codecentric.centerdevice:centerdevice-nsmenufx:2.1.6")
-
-    if (isRunningOnTravis) {
-        implementation("org.openjfx:javafx:13.0.1")
-    }
 
     // PERSISTENCE
     compile("com.h2database:h2:1.4.199")

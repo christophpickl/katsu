@@ -1,9 +1,8 @@
 language: kotlin
 sudo: false # route the build to the container-based infrastructure for a faster build
 
-# we need to explicitly change to java 8
-jdk:
-  - openjdk8
+# oraclejdk8 is not available anymore; openjdk8 doesnt contain javafx :(
+jdk: zulu8.42.0.23-ca-fx-jdk8.0.232-linux_x64
 
 before_install:
   - chmod +x gradlew
