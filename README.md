@@ -14,7 +14,8 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 ## Phase 1
 * autosave (on client change, on exit)
 * treatment navigation buttons <<, >>
-* more client fields: ABC type, donation type, birthday, names, gender, email
+* more client fields: ABC type, donation type, birthday, names (first name, nick name, last name, internal name), email
+* search client by name
 * filter clients: treatments count == 0
 * sort clients: last treatment date, treatments count 
 * more treatment fields: ?
@@ -25,18 +26,19 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 * TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
 
 ## Post 1
+* birthday reminder
+* ad richtext editor: somehow make easy to highlight like with CMD+B)
 * client treatment cooldown
 * treatment counter indicator
 * mail integration (templates; rich format html? own freeshiatsu address?) 
 
 ## Post 2
 * calendar integration
-* doodle integration
-* manage invitations (store mail + mail type), manage response
+* doodle integration (own little service?)
+* manage invitations (store mail + mail type), manage responses
 * treatment goal indicator
 
-
-## IT Driven
+# IT Driven
 
 * try TeamCity CI: https://www.jetbrains.com/teamcity/promo/free-ci/?
 * make UI tests headless: https://vocabhunter.github.io/2016/07/27/TestFX.html
@@ -45,6 +47,6 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 * use more plugins? (kodein, javafx)
     * https://github.com/Kodein-Framework/Kodein-DI/blob/master/framework/tornadofx/kodein-di-framework-tornadofx-jvm/build.gradle.kts)
 
-# Tech Notes
+## Tech Notes
 
 * get sure you are running with Java 8 (JRE; gradle as well)
