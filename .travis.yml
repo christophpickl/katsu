@@ -4,6 +4,20 @@ sudo: false # route the build to the container-based infrastructure for a faster
 # oraclejdk8 is not available anymore; openjdk8 doesnt contain javafx :(
 jdk: zulu8.42.0.23-ca-fx-jdk8.0.232-linux_x64
 
+before_script:
+  - unset -v _JAVA_OPTIONS
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+  jobs:
+  include:
+    stage: Downloading Azul zulu jdk8 and jfx download
+    env: JDK=zulu8.42.0.23-ca-fx-jdk8.0.232-linux_x64
+    script: source install-jdk.sh --url https://cdn.azul.com/zulu/bin/zulu8.42.0.23-ca-fx-jdk8.0.232-linux_x64.tar.gz 3
+
+after_script:
+  - echo JAVA_HOME = {JAVA_HOME} - echo PATH = {PATH}
+  - ls ${JAVA_HOME}
+  - java -version
+
 before_install:
   - chmod +x gradlew
 
