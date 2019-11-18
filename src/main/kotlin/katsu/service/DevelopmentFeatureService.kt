@@ -13,6 +13,7 @@ import javax.persistence.EntityManager
 class DevelopmentFeatureService(
     private val em: EntityManager
 ) {
+    @Suppress("MagicNumber")
     fun resetDummyData() {
         em.transactional {
             createQuery("DELETE FROM ${TreatmentDbo.ENTITY_NAME}").executeUpdate()

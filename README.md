@@ -15,11 +15,13 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 * autosave (on client change, on exit)
 * treatment navigation buttons <<, >>
 * more client fields: ABC type, donation type, birthday, names, gender, email
+* filter clients: treatments count == 0
+* sort clients: last treatment date, treatments count 
 * more treatment fields: ?
 * disable clients
-* etwas kompakterer HTML editor
 
 ## Later
+* etwas kompakterer HTML editor
 * TODO: @OrderBy("${TreatmentDbo.COL_DATE} DESC") ... doesnt work :-/
 
 ## Post 1

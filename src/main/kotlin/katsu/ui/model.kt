@@ -25,7 +25,8 @@ class ClientUi(client: Client) {
 
     fun toClient() = Client(id = id, firstName = firstName, notes = notes, treatments = treatments)
 
-    override fun toString() = "ClientUi($id, $firstName, treatments=${treatments.size}, notes=${notes.katsuSubstring()})"
+    override fun toString() = "ClientUi($id, $firstName, treatments=${treatments.size}, " +
+        "notes=${notes.katsuSubstring()})"
 }
 
 fun Client.toClientUi() = ClientUi(this)

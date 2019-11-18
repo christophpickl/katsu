@@ -26,7 +26,8 @@ class UiTest {
         assertThat(list.selectedItem?.toClient()).isEqualTo(Client(
             id = 1,
             firstName = "",
-            notes = ""
+            notes = "",
+            treatments = emptyList()
         ))
         assertThat(list.items).hasSize(1)
     }
@@ -44,7 +45,8 @@ class UiTest {
         assertThat(list.items[0].toClient()).isEqualTo(Client(
             id = 1,
             firstName = firstName,
-            notes = notes
+            notes = notes,
+            treatments = emptyList()
         ))
     }
 

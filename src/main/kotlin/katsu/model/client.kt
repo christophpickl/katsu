@@ -56,7 +56,8 @@ data class ClientDbo(
         }
     }
 
-    override fun toString() = "ClientDbo($id, $firstName, treatments=${treatments.size}, notes=${notes.katsuSubstring()})"
+    override fun toString() = "ClientDbo($id, $firstName, treatments=${treatments.size}, " +
+        "notes=${notes.katsuSubstring()})"
 }
 
 data class Client(
@@ -68,16 +69,16 @@ data class Client(
     companion object {
         val PROTOTYPE
             get() = Client(
-            id = NO_ID,
-            firstName = "",
-            notes = """
+                id = NO_ID,
+                firstName = "",
+                notes = """
                 <html dir="ltr"><head></head><body contenteditable="true">
                 <h1><font face="Arial">Medical</font></h1>
                 <ul><li><span style="font-family: Arial;">TODO</span></li></ul>
                 </body></html>
             """.trimIndent(),
-            treatments = emptyList()
-        )
+                treatments = emptyList()
+            )
     }
 
     fun toClientDbo() = ClientDbo(
@@ -87,10 +88,13 @@ data class Client(
         treatments = treatments.map { it.toTreatmentDbo() }.toMutableList()
     )
 
-    override fun toString() = "Client($id, $firstName, treatments=${treatments.size}, notes=${notes.katsuSubstring()})"
+    override fun toString() = "Client($id, $firstName, treatments=${treatments.size}, " +
+        "notes=${notes.katsuSubstring()})"
 
 }
 
+private const val MORE_STRING_SYMBOL = " [...]"
+private const val MAX_STRING_LENGTH = 25
 fun String.katsuSubstring(): String =
-    if (length < 23) "'$this'"
-    else "'${substring(0, 19)} [...]'"
+    "'" + (if (length < MAX_STRING_LENGTH) this
+    else substring(0, MAX_STRING_LENGTH - MORE_STRING_SYMBOL.length) + MORE_STRING_SYMBOL) + "'"

@@ -78,15 +78,15 @@ class MainView : View() {
             logg.trace { "selected client changed: $newValue" }
             updateClientFields(newValue)
         }
-        selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, old: TreatmentUi?, newValue: TreatmentUi? ->
-            logg.trace { "selected treatment changed: $newValue" }
+        selectedTreatment.addListener { _: ObservableValue<out TreatmentUi?>, old: TreatmentUi?, new: TreatmentUi? ->
+            logg.trace { "selected treatment changed: $new" }
             if (old != null) {
                 treatments.firstOrNull { it.id == old.id }?.let { storedTreatment ->
                     storedTreatment.dateProperty().set(treatmentView.date)
                     storedTreatment.notesProperty().set(treatmentView.notes)
                 }
             }
-            treatmentView.updateTreatmentFields(newValue)
+            treatmentView.updateTreatmentFields(new)
         }
         registrations += subscribe<ClientAddedEvent> { event ->
             logg.trace { "onClientAddedEvent: $event" }
@@ -207,7 +207,8 @@ class MainView : View() {
                                 contextmenu {
                                     item(name = "Delete") {
                                         setOnAction {
-                                            val treatmentToDelete = selectedTreatment.get() // not properly beneath click point :)
+                                            // not properly beneath click point :) but good enough
+                                            val treatmentToDelete = selectedTreatment.get()
                                             treatments.removeAll { it.id == treatmentToDelete.id }
                                         }
                                     }
@@ -253,6 +254,8 @@ class MainView : View() {
 
 private fun ObservableListWrapper<ClientUi>.setById(client: Client) {
     val clientIndex = indexOfFirst { it.id == client.id }
-    require(clientIndex != -1) { "given client's ID ($client) is not contained in stored IDs: ${map { it.id }.joinToString()}" }
+    require(clientIndex != -1) {
+        "Given client's ID ($client) is not contained in stored IDs: ${map { it.id }.joinToString()}"
+    }
     this[clientIndex] = client.toClientUi()
 }
