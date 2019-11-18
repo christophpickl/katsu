@@ -40,7 +40,6 @@ application {
     mainClassName = myMainClassName
 }
 
-
 dependencies {
     // ATTENTION: for macApp to work, use _compile_ instead _implementation_!
     compile(kotlin("stdlib-jdk8"))
