@@ -3,7 +3,7 @@ sudo: false # route the build to the container-based infrastructure for a faster
 
 # we need to explicitly change to java 8
 jdk:
-  - oraclejdk9
+  - openjdk8
 
 before_install:
   - chmod +x gradlew
