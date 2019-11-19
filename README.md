@@ -14,7 +14,7 @@ It's a complete rewrite and slimmed version of the old [Gadsu](https://github.co
 ## Phase 1
 * autosave (on client change, on exit)
 * treatment navigation buttons <<, >>
-* more client fields: ABC type, donation type, birthday, names (first name, nick name, last name, internal name), email
+* more client fields: ABC type, donation type, birthday, names (first name, nick name, last name, internal name), email, "known from"
 * search client by name
 * filter clients: treatments count == 0
 * sort clients: last treatment date, treatments count 
