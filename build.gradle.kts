@@ -5,7 +5,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = File("src/main/build/version.txt").readText()
+version = File("src/main/build/version.txt").readText().trim()
 println("[KATSU] Version: $version")
 
 val myMainClassName = "katsu.Katsu"

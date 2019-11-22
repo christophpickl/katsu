@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source bin/commons.sh
 
-echo "[Katsu] Release script starting ..."
+echo "[KATSU] Release script starting ..."
 
 VERSION_FILE="src/main/build/version.txt"
 NEXT_VERSION="--not set--"
@@ -14,7 +14,7 @@ calculateNextVersion() {
   DEFAULT_NEXT_VERSION="$CURRENT_MAJOR_VERSION.$NEXT_MINOR_VERSION"
 
   echo
-  read -p "Enter RELEASE Version [$DEFAULT_NEXT_VERSION]: " ENTERED_NEXT_VERSION
+  read -p "[KATSU] Enter RELEASE Version [$DEFAULT_NEXT_VERSION]: " ENTERED_NEXT_VERSION
 
   if [ ! -z "$ENTERED_NEXT_VERSION" ]; then
       NEXT_VERSION=${ENTERED_NEXT_VERSION}
@@ -26,18 +26,18 @@ calculateNextVersion() {
 confirmRelease() {
   echo
   while true; do
-      read -p "[Katsu] Do you confirm this release? [y/n] >> " yn
+      read -p "[KATSU] Do you confirm this release? [y/n] >> " yn
       case ${yn} in
           [Yy]* ) break;;
-          [Nn]* ) echo "Aborted."; exit;;
-          * ) myEcho "Please answer y(es) or n(o)";;
+          [Nn]* ) echo "[KATSU] Aborted."; exit;;
+          * ) myEcho "[KATSU] Please answer y(es) or n(o)";;
       esac
   done
   echo
 }
 
 gitCommitTagPush() {
-  echo "Going to GIT commit, tag and push ..."
+  echo "[KATSU] Going to GIT commit, tag and push ..."
   git add .
   git commit -m "[Auto-Release] current release version: $NEXT_VERSION"
   checkLastCommand
