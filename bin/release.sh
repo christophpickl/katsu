@@ -51,7 +51,10 @@ gitCommitTagPush() {
 
 calculateNextVersion
 confirmRelease
+echo
 executeScript "check.sh"
 echo $NEXT_VERSION > ${VERSION_FILE}
+echo
 gitCommitTagPush
-executeScript "package.sh"
+echo
+executeScript "package.sh release"

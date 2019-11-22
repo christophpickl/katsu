@@ -164,12 +164,13 @@ if (System.getProperty("katsu.enableMacBundle") == "true") {
         icon = "src/main/build/logo.icns"
         // javaProperties.put("apple.laf.useScreenMenuBar", "true")
         // backgroundImage = "doc/macbackground.png"
-        javaProperties.put("katsu.isMacApp", "true")
-//        if (System.getProperty("katsu.environment") == "prod") {
-//            println "[KATSU] macApp is going to be in PROD mode!"
-//            javaProperties.put("katsu.environment", "prod")
-//        } else {
-//            println "[KATSU] macApp is going to be in DEV mode"
-//        }
+        javaProperties["katsu.isMacApp"] = "true"
+        if (System.getProperty("katsu.isReleaseBuild") != null) {
+            println("[KATSU] macApp is going to be in PROD mode!")
+            javaProperties["katsu.env"] = "prod"
+        } else {
+            println("[KATSU] macApp is going to be in DEV mode")
+            javaProperties["katsu.env"] = "dev"
+        }
     }
 }
