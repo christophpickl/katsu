@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
+source bin/commons.sh
 
-./gradlew clean check checkTodo test jacocoTestCoverageVerification
-
-if [ $? -ne 0 ]; then
-  exit
-fi
-
-./gradlew test -Dkatsu.uiTest=true
+executeGradle "clean check checkTodo test jacocoTestCoverageVerification"
+executeGradle "test -Dkatsu.uiTest=true"

@@ -138,7 +138,7 @@ class MainView : View() {
         val mybar = MyMenuBar(menuBarController).apply {
             isUseSystemMenuBar = true
         }
-        if (System.getProperty("katsu.isMac") != null) {
+        if (System.getProperty("katsu.isMacApp") != null) {
             setGlobalMacMenuBar(mybar)
         } else {
             top {

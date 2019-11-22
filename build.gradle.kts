@@ -5,7 +5,8 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = 1.0
+version = File("src/main/build/version.txt").readText()
+println("[KATSU] Version: $version")
 
 val myMainClassName = "katsu.Katsu"
 val myAppName = "Katsu"
@@ -77,10 +78,10 @@ tasks {
     withType<Test> {
         useTestNG {
             if (System.getProperty("katsu.uiTest") != null) {
-                println("[KATSU] UI tests")
+                println("[KATSU] Running UI tests")
                 includeGroups("ui")
             } else {
-                println("[KATSU] unit tests")
+                println("[KATSU] Running non-UI tests")
                 excludeGroups("ui")
             }
             testLogging {
@@ -163,7 +164,7 @@ if (System.getProperty("katsu.enableMacBundle") == "true") {
         icon = "src/main/build/logo.icns"
         // javaProperties.put("apple.laf.useScreenMenuBar", "true")
         // backgroundImage = "doc/macbackground.png"
-//        javaProperties.put("katsu.isMacApp", "true")
+        javaProperties.put("katsu.isMacApp", "true")
 //        if (System.getProperty("katsu.environment") == "prod") {
 //            println "[KATSU] macApp is going to be in PROD mode!"
 //            javaProperties.put("katsu.environment", "prod")

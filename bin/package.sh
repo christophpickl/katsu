@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+source bin/commons.sh
 
-./gradlew build createApp -Dkatsu.enableMacBundle=true
+executeGradle "build createApp -Dkatsu.enableMacBundle=true"
+open "build/macApp"

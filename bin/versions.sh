@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+source bin/commons.sh
 
-./gradlew dependencyUpdates -Plocal
+executeGradle  "dependencyUpdates -Plocal"
